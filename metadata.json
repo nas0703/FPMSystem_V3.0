@@ -1,0 +1,7 @@
+{
+  "name": "VER 2.2 - FPMSB TUNGGAL - Sistem Maklumat Ladang Bersepadu",
+  "description": "Sistem pengurusan dan analitik hasil ladang FPMSB TUNGGAL v2.1.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
