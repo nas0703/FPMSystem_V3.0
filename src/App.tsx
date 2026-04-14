@@ -1965,7 +1965,7 @@ export default function App() {
 LOGIK EKSTRAKSI (RESIT FGV):
 - tarikh: Cari label "Tarikh Urusniaga". Gunakan format YYYY-MM-DD.
 - masa_masuk: Cari baris "Gross". Ambil waktu (HH:MM:SS) yang berada di bawah kolum "Masa".
-- no_resit: Ambil nilai di sebelah "No. Akuan Terima" (cth: A00008947).
+- no_resit: Ambil nilai di sebelah "No. Akuan Terima" (cth: A00008947). Nilai ini juga digunakan sebagai No. Akaun Terima.
 - no_lori: Ambil nilai di sebelah "No. Lori" (cth: CCR1449).
 - no_nota_hantaran: Ambil nilai 10-digit di sebelah "Nota Hantaran" (cth: 1552600137).
 - kpg: Cari baris yang sama dengan "Nota Hantaran". Ambil digit dengan 2 titik perpuluhan yang berada selepas corak "21.00/" (cth: jika "21.00/19.50", ambil "19.50").
@@ -1998,7 +1998,7 @@ PERATURAN TEKNIKAL:
             properties: {
               tarikh: { type: Type.STRING, description: "Tarikh Urusniaga (YYYY-MM-DD)" },
               masa_masuk: { type: Type.STRING, description: "Masa Masuk (HH:MM:SS)" },
-              no_resit: { type: Type.STRING, description: "Nombor Akuan Terima" },
+              no_resit: { type: Type.STRING, description: "Nombor Resit / Akuan Terima" },
               no_lori: { type: Type.STRING, description: "Nombor Lori" },
               no_nota_hantaran: { type: Type.STRING, description: "Nombor Nota Hantaran (10 digit)" },
               kpg: { type: Type.NUMBER, description: "Nilai KPG (2 titik perpuluhan selepas 21.00/)" },
@@ -2023,6 +2023,7 @@ PERATURAN TEKNIKAL:
         setFormData(prev => ({
           ...prev,
           no_resit: result.no_resit || prev.no_resit,
+          no_akaun_terima: result.no_resit || prev.no_resit,
           no_lori: result.no_lori || prev.no_lori,
           no_nota_hantaran: result.no_nota_hantaran || prev.no_nota_hantaran,
           no_seal: result.no_seal || prev.no_seal,
@@ -3231,9 +3232,8 @@ PERATURAN TEKNIKAL:
 
                         {formData.is_efb ? (
                           <>
-                            <div className="grid grid-cols-2 gap-4">
-                              <FloatingInput label="No. Resit" value={formData.no_resit} onChange={v => setFormData({...formData, no_resit: v})} />
-                              <FloatingInput label="No. Akaun Terima" value={formData.no_akaun_terima} onChange={v => setFormData({...formData, no_akaun_terima: v})} />
+                            <div className="grid grid-cols-1 gap-4">
+                              <FloatingInput label="No. Resit" value={formData.no_resit} onChange={v => setFormData({...formData, no_resit: v, no_akaun_terima: v})} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                               <FloatingInput label="No. Lori" value={formData.no_lori} onChange={v => setFormData({...formData, no_lori: v})} />
@@ -3252,9 +3252,8 @@ PERATURAN TEKNIKAL:
                           </>
                         ) : (
                           <>
-                            <div className="grid grid-cols-2 gap-4">
-                              <FloatingInput label="No. Resit" value={formData.no_resit} onChange={v => setFormData({...formData, no_resit: v})} />
-                              <FloatingInput label="No. Akaun Terima" value={formData.no_akaun_terima} onChange={v => setFormData({...formData, no_akaun_terima: v})} />
+                            <div className="grid grid-cols-1 gap-4">
+                              <FloatingInput label="No. Resit" value={formData.no_resit} onChange={v => setFormData({...formData, no_resit: v, no_akaun_terima: v})} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                               <FloatingInput label="No. Lori" value={formData.no_lori} onChange={v => setFormData({...formData, no_lori: v})} />
