@@ -743,7 +743,7 @@ export default function App() {
 
   const handleSwipe = (direction: 'left' | 'right') => {
     setSwipeDirection(direction);
-    const types: ('hasil' | 'muda' | 'kpa_kpg' | 'harga' | 'efb')[] = ['hasil', 'muda', 'kpa_kpg', 'harga', 'efb'];
+    const types: ('hasil' | 'muda' | 'kpa_kpg' | 'efb' | 'harga')[] = ['hasil', 'muda', 'kpa_kpg', 'efb', 'harga'];
     const currentIndex = types.indexOf(reportType as any);
     
     // If current type is not in the main swipeable types (like efc_format), don't swipe
