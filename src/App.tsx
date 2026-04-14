@@ -10,7 +10,7 @@ import { parseReceipt } from './lib/ocrParser';
 import { supabase } from '@/lib/supabaseClient';
 import { 
   ScanLine, LayoutDashboard, ShieldCheck, AlertCircle, AlertTriangle,
-  Leaf, FileText, Loader2, Lock, Delete,
+  Leaf, FileText, Loader2, Lock, Delete, Cpu,
   History, Calendar, Trophy, Droplets, Factory, Camera, Download, Upload, Sun, Moon, Percent, Zap, FileSpreadsheet,
   RefreshCw, Search, ArrowUpRight, ArrowDownRight, BarChart3, Map, Target, TrendingUp, ChevronRight, ChevronDown, LogOut, Plus, X, Trash2, CircleDollarSign, MoveHorizontal,
   MoreVertical, User, Settings, HelpCircle, Info, Printer, PieChart as PieChartIcon
@@ -2826,7 +2826,7 @@ PERATURAN TEKNIKAL:
             <div className="flex flex-col min-w-0">
               <h1 className="text-xl sm:text-2xl font-display font-black text-white tracking-tighter leading-[0.9] uppercase">
                 FPMSB TUNGGAL
-                <span className="block text-[10px] sm:text-[11px] font-sans font-black text-emerald-300 tracking-[0.2em] mt-2 opacity-90">Integrated Plantation Data System V 2.2</span>
+                <span className="block text-[10px] sm:text-[11px] font-sans font-black text-emerald-300 tracking-[0.2em] mt-2 opacity-90">Integrated Plantation Data System V3.0</span>
                 <span className="block text-[9px] sm:text-[10px] font-sans font-medium text-emerald-300/70 tracking-[0.15em] mt-1 normal-case">Sistem Maklumat Ladang</span>
               </h1>
             </div>
@@ -3034,23 +3034,43 @@ PERATURAN TEKNIKAL:
                 </div>
 
                 <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                  <div className="flex gap-4 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
+                  <div className="flex gap-4 p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50">
                     <div className="w-10 h-10 shrink-0 bg-emerald-500/10 rounded-xl flex items-center justify-center">
-                      <LayoutDashboard size={20} className="text-emerald-500" />
+                      <Cpu size={20} className="text-emerald-500" />
                     </div>
                     <div>
-                      <h4 className="text-[11px] font-black text-slate-900 dark:text-white uppercase">Paparan Kompak Pro</h4>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Rekaan 30% lebih padat dengan pengepala jadual bersepadu untuk pemantauan prestasi blok yang lebih efisien.</p>
+                      <h4 className="text-[11px] font-black text-slate-900 dark:text-white uppercase">Sistem V3.0 Pro</h4>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Peningkatan menyeluruh pada enjin data untuk kelajuan dan ketepatan yang lebih tinggi.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
+                    <div className="w-10 h-10 shrink-0 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+                      <ScanLine size={20} className="text-emerald-500" />
+                    </div>
+                    <div>
+                      <h4 className="text-[11px] font-black text-slate-900 dark:text-white uppercase">OCR Pintar V3</h4>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Ekstraksi automatik untuk Harga/tan, Reject, dan Sample. No. Resit & Akaun Terima kini disatukan secara pintar.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
+                    <div className="w-10 h-10 shrink-0 bg-blue-500/10 rounded-xl flex items-center justify-center">
+                      <LayoutDashboard size={20} className="text-blue-500" />
+                    </div>
+                    <div>
+                      <h4 className="text-[11px] font-black text-slate-900 dark:text-white uppercase">Antaramuka Harga/tan</h4>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Label RM/MT telah dikemaskini kepada Harga/tan untuk keselarasan dengan format resit terkini.</p>
                     </div>
                   </div>
 
                   <div className="flex gap-4 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
                     <div className="w-10 h-10 shrink-0 bg-amber-500/10 rounded-xl flex items-center justify-center">
-                      <Percent size={20} className="text-amber-500" />
+                      <FileSpreadsheet size={20} className="text-amber-500" />
                     </div>
                     <div>
-                      <h4 className="text-[11px] font-black text-slate-900 dark:text-white uppercase">Analisis KPG=KPA %</h4>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Ketepatan data kini dipaparkan dalam bentuk peratusan dinamik pada kad ringkasan dan senarai blok.</p>
+                      <h4 className="text-[11px] font-black text-slate-900 dark:text-white uppercase">Eksport Excel V3</h4>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Laporan Excel kini menyokong kolum Harga/tan yang baru untuk analisis kewangan yang lebih tepat.</p>
                     </div>
                   </div>
 
