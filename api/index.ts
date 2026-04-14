@@ -2,7 +2,8 @@ import express from "express";
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
-import PptxGenJS from "pptxgenjs";
+// Remove static import to prevent potential startup issues in serverless environments
+// import PptxGenJS from "pptxgenjs";
 
 console.log("Loading API routes from api/index.ts...");
 
@@ -12,10 +13,11 @@ dotenv.config();
 let supabaseClient: any = null;
 
 function getSupabase() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
   
   if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Supabase credentials missing");
     return null;
   }
 
@@ -26,13 +28,10 @@ function getSupabase() {
   return supabaseClient;
 }
 
-const app = express();
 const router = express.Router();
 
-app.use(express.json());
-
 // Request logging middleware
-app.use((req, res, next) => {
+router.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
@@ -106,7 +105,7 @@ router.post("/hantaran", async (req, res) => {
       no_nota_hantaran: data.no_nota_hantaran?.trim().toUpperCase() || '',
       kpg: data.kpg?.trim().toUpperCase() || '',
       blok: cleanBlok, // Store cleaned blok string
-      peringkat: `PKT ${pkt}`,
+      peringkat: data.is_efb ? "EFB" : `PKT ${pkt}`,
       tan: tanValue,
       muda: parseInt(data.muda) || 0,
       reject: parseFloat(data.reject) || 0,
@@ -289,7 +288,8 @@ router.post("/export/pptx", async (req, res) => {
     const { reportTitle, generatedAt, filters, summaryCards, charts, tables, branding } = payload;
     console.log("Payload parsed, reportTitle:", reportTitle);
 
-    const pptx = new (PptxGenJS as any).default();
+    const PptxGenJS = (await import("pptxgenjs")).default;
+    const pptx = new (PptxGenJS as any)();
     console.log("PptxGenJS instance created");
     
     // Set Presentation Metadata & Layout
@@ -408,7 +408,21 @@ router.post("/export/pptx", async (req, res) => {
   }
 });
 
+const app = express();
+app.use(express.json());
 app.use("/api", router);
 app.use("/", router);
+
+// Global error handler
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error("Global error handler:", err);
+  res.status(500).json({ success: false, error: err.message || "Ralat pelayan dalaman." });
+});
+
+// 404 handler
+app.use((req, res) => {
+  console.warn(`404 Not Found: ${req.method} ${req.url}`);
+  res.status(404).json({ success: false, error: `Laluan ${req.method} ${req.url} tidak dijumpai.` });
+});
 
 export default app;

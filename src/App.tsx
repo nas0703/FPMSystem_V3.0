@@ -85,6 +85,7 @@ interface Transaction {
   masa_masuk: string;
   created_at: string;
   peringkat?: string;
+  is_efb?: boolean;
 }
 
 // --- SUB-COMPONENTS ---
@@ -172,7 +173,7 @@ const ReportSummarySection = ({ type, data, period, isDarkMode, mode = 'all' }: 
                   </div>
                   <div className="bg-white/5 p-0.5 px-1 rounded-md border border-white/5">
                     <p className="text-[5px] font-black text-slate-500 uppercase tracking-tighter">Target</p>
-                    <p className="text-[8px] font-black text-white">{totalTargetTan.toFixed(1)}<span className="text-[5px] ml-0.5 opacity-60">T</span></p>
+                    <p className="text-[8px] font-black text-white">{avgTarget.toFixed(2)}<span className="text-[5px] ml-0.5 opacity-60">T/H</span></p>
                   </div>
                 </div>
               </div>
@@ -186,16 +187,23 @@ const ReportSummarySection = ({ type, data, period, isDarkMode, mode = 'all' }: 
                 <div className="space-y-0 h-full flex flex-col">
                   {showDetails && <p className={`text-[7px] font-display font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 ${period !== 'day' ? 'opacity-0 select-none' : ''}`}>PKT 1</p>}
                   <div className="bg-white dark:bg-slate-900 p-1.5 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800 group hover:border-emerald-200 dark:hover:border-emerald-700 transition-all h-full flex flex-col justify-between">
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start mb-1">
                       <div className="flex flex-col">
                         <p className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 leading-tight">
                           {(data.pkt1_tan / (luasPkt1 || 1)).toFixed(2)}<span className="text-[7px] ml-0.5 text-slate-400 font-bold">T/H</span>
                         </p>
-                        <p className="text-[8px] font-black text-slate-500 dark:text-slate-400 mt-0">
-                          {data.pkt1_tan.toFixed(1)} <span className="text-[6px] text-slate-400 font-bold uppercase">Tan</span>
-                        </p>
                       </div>
                       <span className={`text-[8px] font-black ${pctPkt1 >= 100 ? 'text-emerald-600' : 'text-amber-600'}`}>{pctPkt1.toFixed(0)}%</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1 pt-1 border-t border-slate-50 dark:border-slate-800/50">
+                      <div className="flex flex-col">
+                        <p className="text-[5px] font-black text-slate-400 uppercase tracking-tighter">Hasil</p>
+                        <p className="text-[8px] font-black text-slate-600 dark:text-slate-300">{data.pkt1_tan.toFixed(1)}<span className="text-[5px] ml-0.5 opacity-60">T</span></p>
+                      </div>
+                      <div className="flex flex-col border-l border-slate-50 dark:border-slate-800/50 pl-1">
+                        <p className="text-[5px] font-black text-slate-400 uppercase tracking-tighter">Target</p>
+                        <p className="text-[8px] font-black text-slate-500 dark:text-slate-400">{targetPkt1.toFixed(2)}<span className="text-[5px] ml-0.5 opacity-60">T/H</span></p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -206,16 +214,23 @@ const ReportSummarySection = ({ type, data, period, isDarkMode, mode = 'all' }: 
                 <div className="space-y-0 h-full flex flex-col">
                   {showDetails && <p className={`text-[7px] font-display font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 ${period !== 'day' ? 'opacity-0 select-none' : ''}`}>PKT 2</p>}
                   <div className="bg-white dark:bg-slate-900 p-1.5 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800 group hover:border-emerald-200 dark:hover:border-emerald-700 transition-all h-full flex flex-col justify-between">
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start mb-1">
                       <div className="flex flex-col">
                         <p className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 leading-tight">
                           {(data.pkt2_tan / (luasPkt2 || 1)).toFixed(2)}<span className="text-[7px] ml-0.5 text-slate-400 font-bold">T/H</span>
                         </p>
-                        <p className="text-[8px] font-black text-slate-500 dark:text-slate-400 mt-0">
-                          {data.pkt2_tan.toFixed(1)} <span className="text-[6px] text-slate-400 font-bold uppercase">Tan</span>
-                        </p>
                       </div>
                       <span className={`text-[8px] font-black ${pctPkt2 >= 100 ? 'text-emerald-600' : 'text-amber-600'}`}>{pctPkt2.toFixed(0)}%</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1 pt-1 border-t border-slate-50 dark:border-slate-800/50">
+                      <div className="flex flex-col">
+                        <p className="text-[5px] font-black text-slate-400 uppercase tracking-tighter">Hasil</p>
+                        <p className="text-[8px] font-black text-slate-600 dark:text-slate-300">{data.pkt2_tan.toFixed(1)}<span className="text-[5px] ml-0.5 opacity-60">T</span></p>
+                      </div>
+                      <div className="flex flex-col border-l border-slate-50 dark:border-slate-800/50 pl-1">
+                        <p className="text-[5px] font-black text-slate-400 uppercase tracking-tighter">Target</p>
+                        <p className="text-[8px] font-black text-slate-500 dark:text-slate-400">{targetPkt2.toFixed(2)}<span className="text-[5px] ml-0.5 opacity-60">T/H</span></p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -226,16 +241,23 @@ const ReportSummarySection = ({ type, data, period, isDarkMode, mode = 'all' }: 
                 <div className="space-y-0 h-full flex flex-col">
                   {showDetails && <p className={`text-[7px] font-display font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 ${period !== 'day' ? 'opacity-0 select-none' : ''}`}>FELDA</p>}
                   <div className="bg-white dark:bg-slate-900 p-1.5 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800 group hover:border-emerald-200 dark:hover:border-emerald-700 transition-all h-full flex flex-col justify-between">
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start mb-1">
                       <div className="flex flex-col">
                         <p className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 leading-tight">
                           {(data.felda_tan / (luasFelda || 1)).toFixed(2)}<span className="text-[7px] ml-0.5 text-slate-400 font-bold">T/H</span>
                         </p>
-                        <p className="text-[8px] font-black text-slate-500 dark:text-slate-400 mt-0">
-                          {data.felda_tan.toFixed(1)} <span className="text-[6px] text-slate-400 font-bold uppercase">Tan</span>
-                        </p>
                       </div>
                       <span className={`text-[8px] font-black ${pctFelda >= 100 ? 'text-emerald-600' : 'text-amber-600'}`}>{pctFelda.toFixed(0)}%</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1 pt-1 border-t border-slate-50 dark:border-slate-800/50">
+                      <div className="flex flex-col">
+                        <p className="text-[5px] font-black text-slate-400 uppercase tracking-tighter">Hasil</p>
+                        <p className="text-[8px] font-black text-slate-600 dark:text-slate-300">{data.felda_tan.toFixed(1)}<span className="text-[5px] ml-0.5 opacity-60">T</span></p>
+                      </div>
+                      <div className="flex flex-col border-l border-slate-50 dark:border-slate-800/50 pl-1">
+                        <p className="text-[5px] font-black text-slate-400 uppercase tracking-tighter">Target</p>
+                        <p className="text-[8px] font-black text-slate-500 dark:text-slate-400">{targetFelda.toFixed(2)}<span className="text-[5px] ml-0.5 opacity-60">T/H</span></p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -406,6 +428,36 @@ const ReportSummarySection = ({ type, data, period, isDarkMode, mode = 'all' }: 
           )}
         </div>
       )}
+      {type === 'efb' && (
+        <div className="space-y-1.5 h-full flex flex-col">
+          {/* Hero Summary Card - Total EFB */}
+          {showHero && (
+            <div className="bg-slate-900 p-2 rounded-xl shadow-lg border border-white/5 relative overflow-hidden h-full">
+              <div className="relative z-10">
+                <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Jumlah EFB (Tandan Kosong)</p>
+                <div className="flex items-baseline gap-1">
+                  <p className="text-lg font-display font-black text-white">{data.efb_tan.toFixed(2)}</p>
+                  <p className="text-[8px] font-black text-emerald-400 uppercase">Tan</p>
+                </div>
+                <div className="mt-1 pt-1 border-t border-white/5">
+                  <p className="text-[7px] font-black text-slate-500 uppercase tracking-widest">Bilangan Resit</p>
+                  <p className="text-[10px] font-black text-white">{data.efb_resit} <span className="text-[7px] opacity-60">KPA</span></p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showDetails && (
+            <div className="bg-white dark:bg-slate-900 p-2 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 h-full flex flex-col justify-center">
+              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Status Penghantaran EFB</p>
+              <div className="flex justify-center items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <p className="text-[10px] font-bold text-slate-600 dark:text-slate-300">Berjalan Lancar</p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -416,6 +468,7 @@ export default function App() {
   const [loginError, setLoginError] = useState(false);
 
   const [isExporting, setIsExporting] = useState(false);
+
   const [activeTab, setActiveTab] = useState<'scan' | 'dashboard' | 'sejarah'>('scan');
   const [direction, setDirection] = useState(0);
 
@@ -426,12 +479,12 @@ export default function App() {
     setDirection(nextIndex > currentIndex ? 1 : -1);
     setActiveTab(newTab);
   };
-  const [reportType, setReportType] = useState<'hasil' | 'muda' | 'kpa_kpg' | 'harga' | 'efc_format'>('hasil');
+  const [reportType, setReportType] = useState<'hasil' | 'muda' | 'kpa_kpg' | 'harga' | 'efb' | 'efc_format'>('hasil');
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right'>('left');
   const [showRanking, setShowRanking] = useState(false);
   const [rankingPeriod, setRankingPeriod] = useState<'month' | 'year'>('month');
   const [chartPeriod, setChartPeriod] = useState<'day' | 'month' | 'year' | 'history' | 'monthly_trend'>('month');
-  const [chartMetric, setChartMetric] = useState<'yield' | 'muda' | 'kpg'>('yield');
+  const [chartMetric, setChartMetric] = useState<'yield' | 'muda' | 'kpg' | 'efb'>('yield');
   const [showYtdChart, setShowYtdChart] = useState(true);
   const [showMonthlyTrendChart, setShowMonthlyTrendChart] = useState(true);
   const [showPriceTrendChart, setShowPriceTrendChart] = useState(true);
@@ -457,7 +510,8 @@ export default function App() {
     sample: '0',
     rm_mt: '',
     tarikh: '',
-    masa_masuk: ''
+    masa_masuk: '',
+    is_efb: false
   });
   const [rawData, setRawData] = useState<Transaction[]>([]);
   const [annualData, setAnnualData] = useState<any[]>([
@@ -515,17 +569,32 @@ export default function App() {
   const AFC_PIN = "777777";
   const FS_PIN = "555555";
 
+  const safeFetch = async (url: string, options?: RequestInit) => {
+    const res = await fetch(url, options);
+    const contentType = res.headers.get("content-type");
+    
+    let data;
+    if (contentType && contentType.includes("application/json")) {
+      data = await res.json();
+    } else {
+      const text = await res.text();
+      if (!res.ok) {
+        throw new Error(text || `Ralat pelayan (${res.status})`);
+      }
+      return text;
+    }
+
+    if (!res.ok) {
+      throw new Error(data?.error || data?.message || `Ralat pelayan (${res.status})`);
+    }
+    return data;
+  };
+
   const fetchData = async (silent = false) => {
     try {
       if (!silent) showToast('success', 'Mengambil data terbaru...');
-      const res = await fetch('/api/hantaran');
+      const data = await safeFetch('/api/hantaran');
       
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || `Ralat pelayan (${res.status})`);
-      }
-      
-      const data = await res.json();
       if (Array.isArray(data)) {
         const parsedData = data.map((item: any) => {
           const rawBlok = String(item.blok || '').trim();
@@ -596,14 +665,9 @@ export default function App() {
   const handleDeleteRecord = async (no_resit: string) => {
     try {
       setIsProcessing(true);
-      const res = await fetch(`/api/hantaran/${no_resit}`, {
+      await safeFetch(`/api/hantaran/${no_resit}`, {
         method: 'DELETE'
       });
-      
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Gagal memadam data.');
-      }
       
       showToast('success', `Rekod ${no_resit} telah dipadam.`);
       setRecordToDelete(null);
@@ -619,14 +683,9 @@ export default function App() {
   const handleDeleteAllRecords = async () => {
     try {
       setIsProcessing(true);
-      const res = await fetch('/api/hantaran/all', {
+      await safeFetch('/api/hantaran/all', {
         method: 'DELETE'
       });
-      
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Gagal memadam semua data.');
-      }
       
       showToast('success', 'Semua rekod telah dipadam.');
       setShowDeleteAllModal(false);
@@ -641,10 +700,8 @@ export default function App() {
 
   const fetchAnnualData = async () => {
     try {
-      const res = await fetch('/api/annual-yield');
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
+      const data = await safeFetch('/api/annual-yield');
+      if (Array.isArray(data) && data.length > 0) {
           const serverData = data.map(d => ({
             ...d,
             year: parseInt(d.year) || 0,
@@ -665,7 +722,6 @@ export default function App() {
             return merged.sort((a, b) => a.year - b.year);
           });
         }
-      }
     } catch (e: any) {
       console.error("Annual fetch error:", e.message || e);
     }
@@ -714,8 +770,7 @@ export default function App() {
 
   const checkConfig = async () => {
     try {
-      const res = await fetch('/api/config-check');
-      const data = await res.json();
+      const data = await safeFetch('/api/config-check');
       setConfigStatus(data);
     } catch (e) { console.error('Config check failed', e); }
   };
@@ -829,15 +884,13 @@ export default function App() {
 
     setIsProcessing(true);
     try {
-      const res = await fetch('/api/hantaran', { 
+      const result = await safeFetch('/api/hantaran', { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData) 
       });
       
-      const result = await res.json();
-      
-      if (res.ok && result.success) {
+      if (result.success) {
         showToast('success', `Berjaya: Resit ${result.ref}`);
         setFormData({ 
           no_resit: '', 
@@ -853,7 +906,8 @@ export default function App() {
           sample: '0',
           rm_mt: '',
           tarikh: '', 
-          masa_masuk: '' 
+          masa_masuk: '',
+          is_efb: false
         });
         fetchData(true);
       } else {
@@ -1038,6 +1092,139 @@ export default function App() {
     }
 
     const workbook = new ExcelJS.Workbook();
+
+    // Helper function to create a standard sheet
+    const createStandardSheet = (ws: ExcelJS.Worksheet, data: Transaction[], sheetTitle: string, isMaster: boolean = false) => {
+      // Add Title Row
+      ws.mergeCells('A1:M1');
+      const titleCell = ws.getCell('A1');
+      titleCell.value = 'FPMSB TUNGGAL';
+      titleCell.font = { name: 'Arial Black', size: 20, color: { argb: 'FFFFFFFF' }, bold: true };
+      titleCell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF064E3B' } // Emerald 900
+      };
+      titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      ws.getRow(1).height = 50;
+
+      // Add Subtitle Row
+      ws.mergeCells('A2:M2');
+      const subtitleCell = ws.getCell('A2');
+      subtitleCell.value = 'SISTEM MAKLUMAT LADANG BERSEPADU';
+      subtitleCell.font = { name: 'Arial', size: 14, bold: true, color: { argb: 'FF065F46' } };
+      subtitleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      ws.getRow(2).height = 30;
+
+      // Add Report Type Row
+      ws.mergeCells('A3:M3');
+      const reportCell = ws.getCell('A3');
+      reportCell.value = sheetTitle;
+      reportCell.font = { name: 'Arial', size: 12, bold: true, color: { argb: 'FF065F46' } };
+      reportCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      ws.getRow(3).height = 25;
+
+      // Add Metadata Row (Date/Month)
+      const metaText = exportFilter === 'date' ? `Tarikh: ${exportDate}` : (exportFilter === 'month' ? `Bulan: ${exportMonth}` : 'Semua Rekod');
+      ws.mergeCells('A4:M4');
+      const metaCell = ws.getCell('A4');
+      metaCell.value = `Ladang: FPMSB TUNGGAL | ${metaText}`;
+      metaCell.font = { name: 'Arial', size: 11, bold: true, italic: true, color: { argb: 'FF374151' } };
+      metaCell.alignment = { horizontal: 'right', vertical: 'middle' };
+      ws.getRow(4).height = 20;
+
+      ws.addRow([]); // Spacer (Row 5)
+
+      // Define Columns
+      const allPossibleColumns = [
+        { header: 'TARIKH', key: 'tarikh', width: 15 },
+        { header: 'NO. RESIT', key: 'no_resit', width: 15 },
+        { header: 'NO. LORI', key: 'no_lori', width: 12 },
+        { header: 'NO. SEAL', key: 'no_seal', width: 12 },
+        { header: 'NO. NOTA HANTARAN', key: 'no_nota', width: 20 },
+        { header: 'KPG', key: 'kpg', width: 10 },
+        { header: 'BLOK', key: 'blok', width: 10 },
+        { header: 'PERINGKAT', key: 'peringkat', width: 12 },
+        { header: 'BERAT (TAN)', key: 'tan', width: 15 },
+        { header: 'BTS MUDA', key: 'muda', width: 12 },
+        { header: 'TAN/HEK (T/H)', key: 'thek', width: 15 },
+        { header: 'MASA MASUK', key: 'masa', width: 15 },
+        { header: 'DICIPTA PADA', key: 'created', width: 25 },
+      ];
+      
+      const activeCols = allPossibleColumns.filter(c => exportColumns.includes(c.key) || c.key === 'tarikh');
+      ws.columns = activeCols;
+
+      // Style Header Row
+      const headerRow = ws.getRow(6);
+      headerRow.height = 30;
+      headerRow.eachCell((cell) => {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF10B981' } // Emerald 500
+        };
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+      });
+
+      // Add Data Rows
+      data.forEach((item) => {
+        const rowData: any = {};
+        activeCols.forEach(col => {
+          if (col.key === 'tarikh') rowData.tarikh = item.tarikh.split('-').reverse().join('.');
+          else if (col.key === 'no_resit') rowData.no_resit = item.no_resit;
+          else if (col.key === 'no_lori') rowData.no_lori = item.no_lori;
+          else if (col.key === 'no_seal') rowData.no_seal = item.no_seal || '-';
+          else if (col.key === 'no_nota') rowData.no_nota = item.no_nota_hantaran || '-';
+          else if (col.key === 'kpg') rowData.kpg = item.kpg || '-';
+          else if (col.key === 'blok') rowData.blok = item.blok;
+          else if (col.key === 'peringkat') rowData.peringkat = item.peringkat || '-';
+          else if (col.key === 'tan') rowData.tan = item.tan;
+          else if (col.key === 'muda') rowData.muda = item.muda;
+          else if (col.key === 'thek') rowData.thek = item.thek || 0;
+          else if (col.key === 'masa') rowData.masa = item.masa_masuk || '-';
+          else if (col.key === 'created') rowData.created = item.created_at ? new Date(item.created_at).toLocaleString() : '-';
+        });
+        const row = ws.addRow(rowData);
+        row.eachCell((cell) => {
+          cell.alignment = { horizontal: 'center', vertical: 'middle' };
+          cell.border = { top: { style: 'thin', color: { argb: 'FFD1D5DB' } }, left: { style: 'thin', color: { argb: 'FFD1D5DB' } }, bottom: { style: 'thin', color: { argb: 'FFD1D5DB' } }, right: { style: 'thin', color: { argb: 'FFD1D5DB' } } };
+          cell.font = { size: 10 };
+        });
+      });
+
+      // Add Summary Row
+      const summaryRow = ws.addRow({});
+      const tanColIndex = activeCols.findIndex(c => c.key === 'tan') + 1;
+      const mudaColIndex = activeCols.findIndex(c => c.key === 'muda') + 1;
+      const thekColIndex = activeCols.findIndex(c => c.key === 'thek') + 1;
+
+      if (tanColIndex > 0) {
+        summaryRow.getCell(tanColIndex).value = data.reduce((sum, item) => sum + item.tan, 0);
+        summaryRow.getCell(tanColIndex).numFmt = '#,##0.00';
+      }
+      if (mudaColIndex > 0) {
+        summaryRow.getCell(mudaColIndex).value = data.reduce((sum, item) => sum + item.muda, 0);
+      }
+      if (thekColIndex > 0) {
+        const totalTan = data.reduce((sum, item) => sum + item.tan, 0);
+        const totalLuas = data.reduce((sum, item) => {
+          const b = MASTER_DATA[item.blok];
+          return sum + (b ? b.luas : 0);
+        }, 0);
+        summaryRow.getCell(thekColIndex).value = totalLuas > 0 ? totalTan / totalLuas : 0;
+        summaryRow.getCell(thekColIndex).numFmt = '#,##0.00';
+      }
+
+      summaryRow.eachCell((cell) => {
+        cell.font = { bold: true, size: 11 };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFDE68A' } }; // Amber 200
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        cell.border = { top: { style: 'medium' }, left: { style: 'thin' }, bottom: { style: 'medium' }, right: { style: 'thin' } };
+      });
+    };
 
     const createEfcSheet = (ws: ExcelJS.Worksheet, data: Transaction[]) => {
       // Setup Page Layout
@@ -1384,217 +1571,36 @@ export default function App() {
       worksheet.getColumn(11).width = 10;
       worksheet.getColumn(12).width = 8;
 
+    } else if (reportType === 'efb') {
+      const worksheet = workbook.addWorksheet('Rekod EFB');
+      const efbData = filteredData.filter(item => item.peringkat === 'EFB');
+      createStandardSheet(worksheet, efbData, 'LAPORAN PENGHANTARAN EFB (TANDAN KOSONG)');
     } else {
-      // Helper function to create a standard sheet
-      const createStandardSheet = (ws: ExcelJS.Worksheet, data: Transaction[], sheetTitle: string, isMaster: boolean = false) => {
-        // Add Title Row
-        ws.mergeCells('A1:M1');
-        const titleCell = ws.getCell('A1');
-        titleCell.value = 'FPMSB TUNGGAL';
-        titleCell.font = { name: 'Arial Black', size: 20, color: { argb: 'FFFFFFFF' }, bold: true };
-        titleCell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FF064E3B' } // Emerald 900
-        };
-        titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
-        ws.getRow(1).height = 50;
+      // Standard report sheets
+      const worksheet = workbook.addWorksheet('Rekod Hantaran');
+      createStandardSheet(worksheet, filteredData, `LAPORAN ANALITIK: ${reportType.toUpperCase()}`, true);
 
-        // Add Subtitle Row
-        ws.mergeCells('A2:M2');
-        const subtitleCell = ws.getCell('A2');
-        subtitleCell.value = 'SISTEM MAKLUMAT LADANG BERSEPADU';
-        subtitleCell.font = { name: 'Arial', size: 14, bold: true, color: { argb: 'FF065F46' } };
-        subtitleCell.alignment = { horizontal: 'center', vertical: 'middle' };
-        ws.getRow(2).height = 30;
-
-        // Add Report Type Row
-        ws.mergeCells('A3:M3');
-        const reportCell = ws.getCell('A3');
-        reportCell.value = sheetTitle;
-        reportCell.font = { name: 'Arial', size: 12, bold: true, color: { argb: 'FF065F46' } };
-        reportCell.alignment = { horizontal: 'center', vertical: 'middle' };
-        ws.getRow(3).height = 25;
-
-        // Add Metadata Row (Date/Month)
-        const metaText = exportFilter === 'date' ? `Tarikh: ${exportDate}` : (exportFilter === 'month' ? `Bulan: ${exportMonth}` : 'Semua Rekod');
-        ws.mergeCells('A4:M4');
-        const metaCell = ws.getCell('A4');
-        metaCell.value = `Ladang: FPMSB TUNGGAL | ${metaText}`;
-        metaCell.font = { name: 'Arial', size: 11, bold: true, italic: true, color: { argb: 'FF374151' } };
-        metaCell.alignment = { horizontal: 'right', vertical: 'middle' };
-        ws.getRow(4).height = 20;
-
-        ws.addRow([]); // Spacer (Row 5)
-
-        // Define Columns
-        const allPossibleColumns = [
-          { header: 'TARIKH', key: 'tarikh', width: 15 },
-          { header: 'NO. RESIT', key: 'no_resit', width: 15 },
-          { header: 'NO. LORI', key: 'no_lori', width: 12 },
-          { header: 'NO. SEAL', key: 'no_seal', width: 12 },
-          { header: 'NO. NOTA HANTARAN', key: 'no_nota', width: 20 },
-          { header: 'KPG', key: 'kpg', width: 10 },
-          { header: 'BLOK', key: 'blok', width: 10 },
-          { header: 'PERINGKAT', key: 'peringkat', width: 12 },
-          { header: 'BERAT (TAN)', key: 'tan', width: 15 },
-          { header: 'BTS MUDA', key: 'muda', width: 12 },
-          { header: 'TAN/HEK (T/H)', key: 'thek', width: 15 },
-          { header: 'MASA MASUK', key: 'masa', width: 15 },
-          { header: 'DICIPTA PADA', key: 'created', width: 25 },
-        ];
-        
-        const columns = allPossibleColumns.filter(c => exportColumns.includes(c.key));
-        if (columns.length === 0) columns.push(allPossibleColumns[0]); // Fallback
-
-        ws.columns = columns;
-
-        // Explicitly set header values for Row 6
-        const headerRow = ws.getRow(6);
-        headerRow.values = columns.map(c => c.header);
-
-        // Style Header Row (Row 6)
-        headerRow.eachCell((cell) => {
-          cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FF10B981' } // Emerald 500
-          };
-          cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-          cell.alignment = { horizontal: 'center', vertical: 'middle' };
-          cell.border = {
-            top: { style: 'thin' },
-            left: { style: 'thin' },
-            bottom: { style: 'thin' },
-            right: { style: 'thin' }
-          };
-        });
-        headerRow.height = 25;
-
-        // Add Data Rows
-        data.forEach((item, index) => {
-          const blockInfo = MASTER_DATA[item.blok];
-          const luas = blockInfo?.luas || 0;
-          const calculatedThek = luas > 0 ? item.tan / luas : 0;
-
-          const row = ws.addRow({
-            tarikh: item.tarikh,
-            no_resit: item.no_resit,
-            no_lori: item.no_lori,
-            no_seal: item.no_seal || '-',
-            no_nota: item.no_nota_hantaran || '-',
-            kpg: item.kpg || '-',
-            blok: item.blok,
-            peringkat: blockInfo?.pkt || '-',
-            tan: item.tan,
-            muda: item.muda,
-            thek: luas > 0 ? parseFloat(calculatedThek.toFixed(4)) : '-',
-            masa: item.masa_masuk,
-            created: new Date(item.created_at).toLocaleString('ms-MY')
-          });
-
-          // Style Data Cells
-          row.eachCell((cell) => {
-            cell.alignment = { horizontal: 'center' };
-            cell.border = {
-              top: { style: 'thin', color: { argb: 'FFD1D5DB' } },
-              left: { style: 'thin', color: { argb: 'FFD1D5DB' } },
-              bottom: { style: 'thin', color: { argb: 'FFD1D5DB' } },
-              right: { style: 'thin', color: { argb: 'FFD1D5DB' } }
-            };
-            // Alternating row colors
-            if (index % 2 !== 0) {
-              cell.fill = {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: 'FFF0FDF4' } // Emerald 50
-              };
-            }
-          });
-        });
-
-        // Add Summary Row (Sum)
-        const totalTan = data.reduce((acc, curr) => acc + (curr.tan || 0), 0);
-        const totalMuda = data.reduce((acc, curr) => acc + (curr.muda || 0), 0);
-        
-        // Calculate Average Yield
-        let totalLuas = 0;
-        if (isMaster) {
-          totalLuas = Object.values(MASTER_DATA).reduce((acc, curr) => acc + curr.luas, 0);
-        } else {
-          const uniqueBlocks = Array.from(new Set(data.map(d => d.blok)));
-          if (uniqueBlocks.length === 1 && MASTER_DATA[uniqueBlocks[0]]) {
-            totalLuas = MASTER_DATA[uniqueBlocks[0]].luas;
-          } else {
-            totalLuas = Object.values(MASTER_DATA).reduce((acc, curr) => acc + curr.luas, 0);
-          }
-        }
-        const avgYield = totalLuas > 0 ? totalTan / totalLuas : 0;
-        
-        const footerRow = ws.addRow([]);
-        footerRow.getCell(1).value = 'JUMLAH KESELURUHAN / PURATA HASIL';
-        
-        // Find positions for Tan, Muda, and THEK in the selected columns
-        const tanIndex = columns.findIndex(c => c.key === 'tan') + 1;
-        const mudaIndex = columns.findIndex(c => c.key === 'muda') + 1;
-        const thekIndex = columns.findIndex(c => c.key === 'thek') + 1;
-
-        if (tanIndex > 0) footerRow.getCell(tanIndex).value = totalTan;
-        if (mudaIndex > 0) footerRow.getCell(mudaIndex).value = totalMuda;
-        if (thekIndex > 0) footerRow.getCell(thekIndex).value = parseFloat(avgYield.toFixed(4));
-
-        footerRow.eachCell((cell, colNumber) => {
-          cell.font = { bold: true, size: 11 };
-          cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFFDE68A' } // Amber 200
-          };
-          cell.border = {
-            top: { style: 'medium', color: { argb: 'FF064E3B' } },
-            left: { style: 'thin', color: { argb: 'FF064E3B' } },
-            bottom: { style: 'medium', color: { argb: 'FF064E3B' } },
-            right: { style: 'thin', color: { argb: 'FF064E3B' } }
-          };
-          cell.alignment = { horizontal: 'center', vertical: 'middle' };
-          
-          // Format numbers in footer
-          if (colNumber === tanIndex) { // BERAT (TAN)
-            cell.numFmt = '#,##0.00';
-          }
-          if (colNumber === thekIndex) { // TAN/HEK
-            cell.numFmt = '#,##0.0000';
-          }
-        });
-        footerRow.height = 30;
-      };
-
-      // 1. Create Master Data sheet (All records)
-      const masterSheet = workbook.addWorksheet('Master Data');
-      createStandardSheet(masterSheet, filteredData, 'LAPORAN REKOD HANTARAN HASIL (SEMUA)', true);
-
-      // 2. Create individual sheets for each block
+      // If it's 'hasil', also create individual block sheets
       if (reportType === 'hasil') {
-        // Sort blocks numerically
         const uniqueBlocks = Array.from(new Set(filteredData.map(d => d.blok))).sort((a, b) => {
-          const strA = String(a);
-          const strB = String(b);
-          const numA = parseInt(strA);
-          const numB = parseInt(strB);
+          const numA = parseInt(String(a));
+          const numB = parseInt(String(b));
           if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-          return strA.localeCompare(strB);
+          return String(a).localeCompare(String(b));
         });
-        
+
         uniqueBlocks.forEach(blok => {
           const blokData = filteredData.filter(d => d.blok === blok);
           if (blokData.length > 0) {
             const blokSheet = workbook.addWorksheet(`Blok ${blok}`);
-            createStandardSheet(blokSheet, blokData, `LAPORAN REKOD HANTARAN HASIL - BLOK ${blok}`, false);
+            createStandardSheet(blokSheet, blokData, `REKOD HANTARAN BLOK ${blok}`);
           }
         });
       }
+        // REMOVE OLD DEFINITION BELOW
+    }
 
-      if (reportType === 'muda') {
+    if (reportType === 'muda') {
         // Sheet 1: Bts Muda Bulan Ini by Blok by Date
         const currentMonthSheet = workbook.addWorksheet('Bts Muda Bulan Ini', { views: [{ state: 'frozen', ySplit: 3, xSplit: 1 }] });
         
@@ -1760,7 +1766,6 @@ export default function App() {
           s.getColumn(1).width = 12;
         });
       }
-    }
 
     // --- ADD CHARTS SHEET ---
     if (reportType !== 'efc_format') {
@@ -1955,10 +1960,10 @@ export default function App() {
               },
             },
             {
-              text: `Anda adalah pakar OCR khusus untuk resit FGV Trading Sdn. Bhd. Ekstrak data dengan ketepatan 100% mengikut peraturan berikut:
+              text: `Anda adalah pakar OCR khusus untuk resit FGV Trading Sdn. Bhd dan resit EFB (Tandan Kosong). Ekstrak data dengan ketepatan 100% mengikut peraturan berikut:
 
-LOGIK EKSTRAKSI:
-- tarikh: Cari label "Tarikh Urusniaga". Gunakan format DD/MM/YYYY.
+LOGIK EKSTRAKSI (RESIT FGV):
+- tarikh: Cari label "Tarikh Urusniaga". Gunakan format YYYY-MM-DD.
 - masa_masuk: Cari baris "Gross". Ambil waktu (HH:MM:SS) yang berada di bawah kolum "Masa".
 - no_resit: Ambil nilai di sebelah "No. Akuan Terima" (cth: A00008947).
 - no_lori: Ambil nilai di sebelah "No. Lori" (cth: CCR1449).
@@ -1968,11 +1973,21 @@ LOGIK EKSTRAKSI:
 - tan: Cari label "Nett.". Ambil nilai nombor (tan) di sebelahnya (cth: 3.24). 
 - muda: pada baris >25 0, Muda, ambil number selepas 'muda :' biasanya 1 atau 2 digit (tandan).
 - no_seal: Cari tulisan tangan 6-digit nombor yang terletak di bawah "M-Manual" di bahagian bawah kanan resit.
+- is_efb: false
+
+LOGIK EKSTRAKSI (RESIT EFB):
+- tarikh: Cari label "Tarikh Urusniaga". Gunakan format YYYY-MM-DD.
+- no_lori: Cari label "No. Lori".
+- tan: Cari label "Nett". Ambil nilai nombor di sebelahnya (cth: 5.20).
+- blok: Cari label "No. MPOB". Blok adalah 1 atau 2 digit nombor (biasanya tulisan tangan) yang berada tepat di bawah label "No. MPOB".
+- no_resit: Cari sebarang nombor siri atau "No. Resit" di bahagian atas. Jika tiada, gunakan "EFB-" diikuti No. Lori dan Tarikh tanpa sengkang.
+- is_efb: true (WAJIB true jika resit bertajuk "TANDAN KOSONG" atau "EFB")
 
 PERATURAN TEKNIKAL:
 1. Output WAJIB dalam format JSON sahaja.
 2. Nilai "tan", "kpg", dan "muda" mestilah jenis 'number'.
-3. Jika tulisan kabur, bandingkan Nett = Gross - Tare. Gunakan hasil matematik tersebut.`,
+3. Jika tulisan kabur, bandingkan Nett = Gross - Tare. Gunakan hasil matematik tersebut.
+4. Tentukan is_efb berdasarkan kandungan resit.`,
             },
           ],
         },
@@ -1981,7 +1996,7 @@ PERATURAN TEKNIKAL:
           responseSchema: {
             type: Type.OBJECT,
             properties: {
-              tarikh: { type: Type.STRING, description: "Tarikh Urusniaga (DD/MM/YYYY)" },
+              tarikh: { type: Type.STRING, description: "Tarikh Urusniaga (YYYY-MM-DD)" },
               masa_masuk: { type: Type.STRING, description: "Masa Masuk (HH:MM:SS)" },
               no_resit: { type: Type.STRING, description: "Nombor Akuan Terima" },
               no_lori: { type: Type.STRING, description: "Nombor Lori" },
@@ -1991,6 +2006,7 @@ PERATURAN TEKNIKAL:
               tan: { type: Type.NUMBER, description: "Berat bersih (Nett) dalam Tan" },
               muda: { type: Type.NUMBER, description: "Bilangan tandan muda" },
               no_seal: { type: Type.STRING, description: "Nombor seal (6 digit tulisan tangan di bawah M-Manual)" },
+              is_efb: { type: Type.BOOLEAN, description: "Adakah ini resit EFB?" },
               confidence: { type: Type.NUMBER, description: "Tahap keyakinan 0-100" }
             },
             required: ["tarikh", "no_resit", "no_lori", "tan", "confidence"]
@@ -2011,17 +2027,18 @@ PERATURAN TEKNIKAL:
           no_nota_hantaran: result.no_nota_hantaran || prev.no_nota_hantaran,
           no_seal: result.no_seal || prev.no_seal,
           kpg: result.kpg?.toString() || prev.kpg,
-          blok: result.blok || prev.blok,
           tan: result.tan?.toString() || prev.tan,
           muda: result.muda?.toString() || prev.muda,
           tarikh: result.tarikh || prev.tarikh,
-          masa_masuk: result.masa_masuk || prev.masa_masuk
+          masa_masuk: result.masa_masuk || prev.masa_masuk,
+          is_efb: !!result.is_efb,
+          blok: result.is_efb ? '99' : (result.blok || prev.blok)
         }));
 
         if (result.confidence < 70) {
           showToast('error', `⚠️ Accuracy rendah (${result.confidence}%). Sila semak maklumat.`);
         } else {
-          showToast('success', `✅ Scan berjaya (${result.confidence}%)`);
+          showToast('success', result.is_efb ? `✅ Scan EFB berjaya (${result.confidence}%)` : `✅ Scan berjaya (${result.confidence}%)`);
         }
       } else {
         showToast('error', 'Gagal mengekstrak maklumat. Sila isi secara manual.');
@@ -2059,6 +2076,7 @@ PERATURAN TEKNIKAL:
       let pkt1_muda = 0, pkt2_muda = 0, felda_muda = 0;
       let pkt1_kpg_match = 0, pkt2_kpg_match = 0, felda_kpg_match = 0;
       let pkt1_resit = 0, pkt2_resit = 0, felda_resit = 0;
+      let efb_tan = 0, efb_resit = 0;
       
       let pkt1_total_price = 0, pkt2_total_price = 0, felda_total_price = 0;
       let pkt1_price_count = 0, pkt2_price_count = 0, felda_price_count = 0;
@@ -2066,10 +2084,11 @@ PERATURAN TEKNIKAL:
       let pkt1_total_price1pct = 0, pkt2_total_price1pct = 0, felda_total_price1pct = 0;
       let pkt1_price1pct_count = 0, pkt2_price1pct_count = 0, felda_price1pct_count = 0;
 
-      // Overall totals for the period (including unmatched records)
-      const totalTan = data.reduce((acc, curr) => acc + (curr.tan || 0), 0);
-      const totalMuda = data.reduce((acc, curr) => acc + (curr.muda || 0), 0);
-      let totalResit = data.length;
+      // Overall totals for the period (excluding EFB for main yield metrics)
+      const ffbData = data.filter(item => item.peringkat !== 'EFB');
+      const totalTan = ffbData.reduce((acc, curr) => acc + (curr.tan || 0), 0);
+      const totalMuda = ffbData.reduce((acc, curr) => acc + (curr.muda || 0), 0);
+      let totalResit = ffbData.length;
       
       let kpgMatchCount = 0;
       let kpgMatchTan = 0;
@@ -2086,6 +2105,7 @@ PERATURAN TEKNIKAL:
           luas: MASTER_DATA[blok].luas,
           target_mt: scaledTarget,
           tan: 0,
+          efb_tan: 0,
           muda: 0,
           resit_count: 0,
           kpg_match_count: 0,
@@ -2097,6 +2117,17 @@ PERATURAN TEKNIKAL:
       });
 
       data.forEach(row => {
+        if (row.peringkat === 'EFB') {
+          efb_tan += row.tan;
+          efb_resit += 1;
+          const rowBlok = String(row.blok || '').trim();
+          const b = blokStats.find(s => s.blok === rowBlok);
+          if (b) {
+            b.efb_tan += row.tan;
+          }
+          return;
+        }
+
         const rowBlok = String(row.blok || '').trim();
         const b = blokStats.find(s => s.blok === rowBlok);
         
@@ -2195,10 +2226,10 @@ PERATURAN TEKNIKAL:
       const price1pctCount = pkt1_price1pct_count + pkt2_price1pct_count + felda_price1pct_count;
 
       return { 
-        pkt1_tan, pkt2_tan, felda_tan, 
+        pkt1_tan, pkt2_tan, felda_tan, efb_tan,
         pkt1_muda, pkt2_muda, felda_muda, 
         pkt1_kpg_match, pkt2_kpg_match, felda_kpg_match,
-        pkt1_resit, pkt2_resit, felda_resit,
+        pkt1_resit, pkt2_resit, felda_resit, efb_resit,
         blokStats, rankedBlok, totalResit, kpgMatchCount, kpgMatchTan,
         totalTan, totalMuda, totalTargetTan: blokStats.reduce((acc, b) => acc + (b.luas * b.targetHek), 0),
         avgPrice: priceCount > 0 ? totalPrice / priceCount : 0,
@@ -2295,6 +2326,8 @@ PERATURAN TEKNIKAL:
       let pkt1Kpg = 0, pkt2Kpg = 0, feldaKpg = 0;
 
       monthData.forEach(item => {
+        if (item.peringkat === 'EFB') return; // Exclude EFB from FFB trends
+        
         const b = MASTER_DATA[item.blok];
         const kpgVal = parseFloat(item.kpg || '0');
         const rowDate = item.tarikh || (item.created_at ? new Date(new Date(item.created_at).getTime() + (8 * 60 * 60 * 1000)).toISOString().split('T')[0] : '');
@@ -2336,9 +2369,11 @@ PERATURAN TEKNIKAL:
       const pkt2Luas = Object.values(MASTER_DATA).filter(m => m.pkt === '002').reduce((acc, curr) => acc + curr.luas, 0);
       const feldaLuas = Object.values(MASTER_DATA).filter(m => m.pkt === '003').reduce((acc, curr) => acc + curr.luas, 0);
 
-      const totalTan = monthData.reduce((acc, curr) => acc + (curr.tan || 0), 0);
-      const totalMuda = monthData.reduce((acc, curr) => acc + (curr.muda || 0), 0);
-      const totalKpg = monthData.filter(item => {
+      const ffbMonthData = monthData.filter(item => item.peringkat !== 'EFB');
+      const totalTan = ffbMonthData.reduce((acc, curr) => acc + (curr.tan || 0), 0);
+      const efbTan = monthData.filter(item => item.peringkat === 'EFB').reduce((acc, curr) => acc + (curr.tan || 0), 0);
+      const totalMuda = ffbMonthData.reduce((acc, curr) => acc + (curr.muda || 0), 0);
+      const totalKpg = ffbMonthData.filter(item => {
         const kpgVal = parseFloat(item.kpg || '0');
         const rowDate = item.tarikh || (item.created_at ? new Date(new Date(item.created_at).getTime() + (8 * 60 * 60 * 1000)).toISOString().split('T')[0] : '');
         const threshold = (rowDate >= '2026-04-13') ? 21.25 : 21.00;
@@ -2351,11 +2386,13 @@ PERATURAN TEKNIKAL:
       const blockYields: Record<string, number> = {};
       Object.keys(MASTER_DATA).forEach(blok => {
         const blokData = monthData.filter(d => d.blok === blok);
-        const blokTan = blokData.reduce((acc, curr) => acc + (curr.tan || 0), 0);
+        const ffbBlokData = blokData.filter(d => d.peringkat !== 'EFB');
+        const blokTan = ffbBlokData.reduce((acc, curr) => acc + (curr.tan || 0), 0);
         const blokLuas = MASTER_DATA[blok].luas;
         blockYields[`yield_${blok}`] = blokLuas > 0 ? parseFloat((blokTan / blokLuas).toFixed(2)) : 0;
-        blockYields[`muda_${blok}`] = blokData.reduce((acc, curr) => acc + (curr.muda || 0), 0);
-        blockYields[`kpg_${blok}`] = blokData.filter(item => {
+        blockYields[`muda_${blok}`] = ffbBlokData.reduce((acc, curr) => acc + (curr.muda || 0), 0);
+        blockYields[`efb_${blok}`] = blokData.filter(d => d.peringkat === 'EFB').reduce((acc, curr) => acc + (curr.tan || 0), 0);
+        blockYields[`kpg_${blok}`] = ffbBlokData.filter(item => {
           const kpgVal = parseFloat(item.kpg || '0');
           const rowDate = item.tarikh || (item.created_at ? new Date(new Date(item.created_at).getTime() + (8 * 60 * 60 * 1000)).toISOString().split('T')[0] : '');
           const threshold = (rowDate >= '2026-04-13') ? 21.25 : 21.00;
@@ -2387,6 +2424,7 @@ PERATURAN TEKNIKAL:
         pkt2Kpg,
         feldaKpg,
         tan: parseFloat(totalTan.toFixed(2)),
+        efb: parseFloat(efbTan.toFixed(2)),
         avgPrice: parseFloat(avgPrice.toFixed(2)),
         avgPrice1Pct: parseFloat(avgPrice1Pct.toFixed(2)),
         ...blockYields,
@@ -2569,6 +2607,7 @@ PERATURAN TEKNIKAL:
                     { id: 'hasil', label: 'Hasil' },
                     { id: 'muda', label: 'Muda' },
                     { id: 'kpa_kpg', label: 'Kpg=Kpa' },
+                    { id: 'efb', label: 'EFB' },
                     { id: 'efc_format', label: 'Efc Format' }
                   ] as const).map(r => (
                     <button 
@@ -2921,6 +2960,7 @@ PERATURAN TEKNIKAL:
                 { id: 'hasil', label: 'Hasil' },
                 { id: 'muda', label: 'Bts Muda' },
                 { id: 'kpa_kpg', label: 'Kpg=Kpa' },
+                { id: 'efb', label: 'EFB' },
                 { id: 'harga', label: 'Harga Bts' }
               ] as const).map(r => (
                 <button 
@@ -2932,6 +2972,7 @@ PERATURAN TEKNIKAL:
                     if (r.id === 'hasil') setChartMetric('yield');
                     else if (r.id === 'muda') setChartMetric('muda');
                     else if (r.id === 'kpa_kpg') setChartMetric('kpg');
+                    else if (r.id === 'efb') setChartMetric('yield');
                     else if (r.id === 'harga') setChartMetric('yield'); // Default to yield for charts if on harga
                     
                     // Center the clicked button
@@ -3134,7 +3175,7 @@ PERATURAN TEKNIKAL:
             {activeTab === 'scan' && (
               <div className="w-full">
                 {(() => {
-                  const isBlokValid = formData.blok === '' || (parseInt(formData.blok) >= 1 && parseInt(formData.blok) <= 22) || formData.blok === '88';
+                  const isBlokValid = formData.blok === '' || (parseInt(formData.blok) >= 1 && parseInt(formData.blok) <= 99);
                   return (
                     <div className="animate-in fade-in duration-300">
                       <div className="flex flex-col items-center justify-center mb-3">
@@ -3157,36 +3198,92 @@ PERATURAN TEKNIKAL:
                       </div>
                       
                       <form onSubmit={submitTransaction} className="space-y-4 mt-2">
-                        <div className="grid grid-cols-2 gap-4">
-                          <FloatingInput label="No. Resit" value={formData.no_resit} onChange={v => setFormData({...formData, no_resit: v})} />
-                          <FloatingInput label="No. Akaun Terima" value={formData.no_akaun_terima} onChange={v => setFormData({...formData, no_akaun_terima: v})} />
+                        <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 mb-2">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${formData.is_efb ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20' : 'bg-slate-200 dark:bg-slate-700 text-slate-400'}`}>
+                              <Factory size={20} />
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-black text-slate-900 dark:text-white uppercase">Resit EFB</p>
+                              <p className="text-[8px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Tandan Kosong</p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newIsEfb = !formData.is_efb;
+                              setFormData({
+                                ...formData, 
+                                is_efb: newIsEfb,
+                                kpg: newIsEfb ? '' : formData.kpg,
+                                muda: newIsEfb ? '0' : formData.muda,
+                                reject: newIsEfb ? '0.00' : formData.reject,
+                                sample: newIsEfb ? '0' : formData.sample,
+                                no_seal: newIsEfb ? '' : formData.no_seal,
+                                rm_mt: newIsEfb ? '' : formData.rm_mt
+                              });
+                            }}
+                            className={`w-12 h-6 rounded-full relative transition-all duration-300 ${formData.is_efb ? 'bg-purple-500' : 'bg-slate-300 dark:bg-slate-700'}`}
+                          >
+                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${formData.is_efb ? 'left-7' : 'left-1'}`} />
+                          </button>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <FloatingInput label="No. Lori" value={formData.no_lori} onChange={v => setFormData({...formData, no_lori: v})} />
-                          <FloatingInput label="No. Nota Hantaran" value={formData.no_nota_hantaran} onChange={v => setFormData({...formData, no_nota_hantaran: v})} />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <FloatingInput label="No. Seal" value={formData.no_seal} onChange={v => setFormData({...formData, no_seal: v})} />
-                          <FloatingInput label="RM / MT" type="number" step="0.01" value={formData.rm_mt} onChange={v => setFormData({...formData, rm_mt: v})} />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <FloatingInput label="KPG" value={formData.kpg} onChange={v => setFormData({...formData, kpg: v})} />
-                          <FloatingInput 
-                            label="No. Blok (1-22, 88)" 
-                            type="number" 
-                            value={formData.blok} 
-                            onChange={v => setFormData({...formData, blok: v})} 
-                            className={!isBlokValid ? 'border-red-500' : 'border-slate-200'}
-                          />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <FloatingInput label="Berat (Tan)" type="number" step="0.01" value={formData.tan} onChange={v => setFormData({...formData, tan: v})} />
-                          <FloatingInput label="Bts Muda" type="number" value={formData.muda} onChange={v => setFormData({...formData, muda: v})} />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <FloatingInput label="Reject" type="number" step="0.01" value={formData.reject} onChange={v => setFormData({...formData, reject: v})} />
-                          <FloatingInput label="Sample" type="number" value={formData.sample} onChange={v => setFormData({...formData, sample: v})} />
-                        </div>
+
+                        {formData.is_efb ? (
+                          <>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FloatingInput label="No. Resit" value={formData.no_resit} onChange={v => setFormData({...formData, no_resit: v})} />
+                              <FloatingInput label="No. Akaun Terima" value={formData.no_akaun_terima} onChange={v => setFormData({...formData, no_akaun_terima: v})} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FloatingInput label="No. Lori" value={formData.no_lori} onChange={v => setFormData({...formData, no_lori: v})} />
+                              <FloatingInput label="No. Nota Hantaran" value={formData.no_nota_hantaran} onChange={v => setFormData({...formData, no_nota_hantaran: v})} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FloatingInput 
+                                label="No. Blok" 
+                                type="number" 
+                                value={formData.blok} 
+                                onChange={v => setFormData({...formData, blok: v})} 
+                                className={!isBlokValid ? 'border-red-500' : 'border-slate-200'}
+                              />
+                              <FloatingInput label="Berat EFB (Tan)" type="number" step="0.01" value={formData.tan} onChange={v => setFormData({...formData, tan: v})} />
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FloatingInput label="No. Resit" value={formData.no_resit} onChange={v => setFormData({...formData, no_resit: v})} />
+                              <FloatingInput label="No. Akaun Terima" value={formData.no_akaun_terima} onChange={v => setFormData({...formData, no_akaun_terima: v})} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FloatingInput label="No. Lori" value={formData.no_lori} onChange={v => setFormData({...formData, no_lori: v})} />
+                              <FloatingInput label="No. Nota Hantaran" value={formData.no_nota_hantaran} onChange={v => setFormData({...formData, no_nota_hantaran: v})} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FloatingInput label="No. Seal" value={formData.no_seal} onChange={v => setFormData({...formData, no_seal: v})} />
+                              <FloatingInput label="RM / MT" type="number" step="0.01" value={formData.rm_mt} onChange={v => setFormData({...formData, rm_mt: v})} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FloatingInput label="KPG" value={formData.kpg} onChange={v => setFormData({...formData, kpg: v})} />
+                              <FloatingInput 
+                                label="No. Blok (1-22, 88)" 
+                                type="number" 
+                                value={formData.blok} 
+                                onChange={v => setFormData({...formData, blok: v})} 
+                                className={!isBlokValid ? 'border-red-500' : 'border-slate-200'}
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FloatingInput label="Berat (Tan)" type="number" step="0.01" value={formData.tan} onChange={v => setFormData({...formData, tan: v})} />
+                              <FloatingInput label="Bts Muda" type="number" value={formData.muda} onChange={v => setFormData({...formData, muda: v})} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FloatingInput label="Reject" type="number" step="0.01" value={formData.reject} onChange={v => setFormData({...formData, reject: v})} />
+                              <FloatingInput label="Sample" type="number" value={formData.sample} onChange={v => setFormData({...formData, sample: v})} />
+                            </div>
+                          </>
+                        )}
                         <p className="text-[12px] text-amber-500 font-bold ml-2">
                           ⚠️ Sila semak data sebelum simpan
                         </p>
@@ -3249,7 +3346,7 @@ PERATURAN TEKNIKAL:
                         </motion.button>
                       </div>
                     </div>
-            
+
                   {/* Ringkasan Utama Berdasarkan Report Type (Semua Tempoh) - Layout Melintang (3 Kolum) */}
                   <div className="grid grid-cols-3 gap-x-2 gap-y-3 mb-4">
                     {/* Row 1: Headers */}
@@ -3296,7 +3393,7 @@ PERATURAN TEKNIKAL:
                         <div className="flex items-center justify-center gap-2">
                           <h3 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-1.5">
                             <BarChart3 size={10} className="text-emerald-500" />
-                            Trend Bulanan ({new Date().getFullYear()}) - {reportType === 'hasil' ? 'HASIL' : reportType === 'muda' ? 'BTS MUDA' : 'KPG=KPA'}
+                            Trend Bulanan ({new Date().getFullYear()}) - {reportType === 'hasil' ? 'HASIL' : reportType === 'muda' ? 'BTS MUDA' : reportType === 'efb' ? 'EFB' : 'KPG=KPA'}
                           </h3>
                         </div>
                         <motion.button 
@@ -3363,7 +3460,7 @@ PERATURAN TEKNIKAL:
                                   </div>
                                   <div className="px-1.5 py-0.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-md border border-emerald-100 dark:border-emerald-800">
                                     <p className="text-[6px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
-                                      {reportType === 'hasil' ? 'T/H' : reportType === 'muda' ? 'Bts' : 'Resit'}
+                                      {reportType === 'hasil' ? 'T/H' : reportType === 'muda' ? 'Bts' : reportType === 'efb' ? 'Tan' : 'Resit'}
                                     </p>
                                   </div>
                                 </div>
@@ -3374,6 +3471,7 @@ PERATURAN TEKNIKAL:
                                         (selectedBlockFilter !== 'all' ? `yield_${selectedBlockFilter}` : selectedPactFilter === '001' ? 'pkt1' : selectedPactFilter === '002' ? 'pkt2' : 'yield') : 
                                         reportType === 'muda' ? 
                                         (selectedBlockFilter !== 'all' ? `muda_${selectedBlockFilter}` : selectedPactFilter === '001' ? 'pkt1Muda' : selectedPactFilter === '002' ? 'pkt2Muda' : 'muda') : 
+                                        reportType === 'efb' ? 'efb' :
                                         (selectedBlockFilter !== 'all' ? `kpg_${selectedBlockFilter}` : selectedPactFilter === '001' ? 'pkt1Kpg' : selectedPactFilter === '002' ? 'pkt2Kpg' : 'kpg');
                                       
                                       const chartData = analytics.monthlyTrend;
@@ -3397,7 +3495,7 @@ PERATURAN TEKNIKAL:
                                           />
                                           <Area type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} fillOpacity={1} fill="url(#colorTrend)" />
                                           <Bar dataKey={dataKey} barSize={16} radius={[3, 3, 0, 0]} fill={color} fillOpacity={0.3}>
-                                            <LabelList dataKey={dataKey} position="top" style={{ fontSize: '7px', fontWeight: '900', fill: isDarkMode ? '#94a3b8' : '#64748b' }} formatter={(v: any) => v > 0 ? (reportType === 'hasil' ? v.toFixed(1) : v) : ''} />
+                                            <LabelList dataKey={dataKey} position="top" style={{ fontSize: '7px', fontWeight: '900', fill: isDarkMode ? '#94a3b8' : '#64748b' }} formatter={(v: any) => v > 0 ? (reportType === 'hasil' || reportType === 'efb' ? v.toFixed(1) : v) : ''} />
                                           </Bar>
                                           {reportType === 'hasil' && <ReferenceLine y={2.33} stroke="#f47738" strokeDasharray="4 4" label={{ position: 'right', value: 'Target', fill: '#f47738', fontSize: 7, fontWeight: 900 }} />}
                                         </ComposedChart>
@@ -3420,7 +3518,7 @@ PERATURAN TEKNIKAL:
                                   <div className="h-12 w-full">
                                     <ResponsiveContainer width="100%" height="100%">
                                       <BarChart data={analytics.monthlyTrend}>
-                                        <Bar dataKey={reportType === 'hasil' ? 'yield' : reportType === 'muda' ? 'muda' : 'kpg'} fill="#10b981" radius={[2, 2, 0, 0]} />
+                                        <Bar dataKey={reportType === 'hasil' ? 'yield' : reportType === 'muda' ? 'muda' : reportType === 'efb' ? 'efb' : 'kpg'} fill="#10b981" radius={[2, 2, 0, 0]} />
                                       </BarChart>
                                     </ResponsiveContainer>
                                   </div>
@@ -3438,7 +3536,7 @@ PERATURAN TEKNIKAL:
                                   <div className="h-12 w-full">
                                     <ResponsiveContainer width="100%" height="100%">
                                       <BarChart data={analytics.monthlyTrend}>
-                                        <Bar dataKey={reportType === 'hasil' ? 'pkt1' : reportType === 'muda' ? 'pkt1Muda' : 'pkt1Kpg'} fill="#3b82f6" radius={[2, 2, 0, 0]} />
+                                        <Bar dataKey={reportType === 'hasil' ? 'pkt1' : reportType === 'muda' ? 'pkt1Muda' : reportType === 'efb' ? 'efb' : 'pkt1Kpg'} fill="#3b82f6" radius={[2, 2, 0, 0]} />
                                       </BarChart>
                                     </ResponsiveContainer>
                                   </div>
@@ -3456,7 +3554,7 @@ PERATURAN TEKNIKAL:
                                   <div className="h-12 w-full">
                                     <ResponsiveContainer width="100%" height="100%">
                                       <BarChart data={analytics.monthlyTrend}>
-                                        <Bar dataKey={reportType === 'hasil' ? 'pkt2' : reportType === 'muda' ? 'pkt2Muda' : 'pkt2Kpg'} fill="#f59e0b" radius={[2, 2, 0, 0]} />
+                                        <Bar dataKey={reportType === 'hasil' ? 'pkt2' : reportType === 'muda' ? 'pkt2Muda' : reportType === 'efb' ? 'efb' : 'pkt2Kpg'} fill="#f59e0b" radius={[2, 2, 0, 0]} />
                                       </BarChart>
                                     </ResponsiveContainer>
                                   </div>
@@ -3716,16 +3814,16 @@ PERATURAN TEKNIKAL:
                     <div className="flex flex-col gap-3">
                       {chartPeriod !== 'history' && (
                         <div className="flex bg-slate-50 dark:bg-slate-900/50 p-0.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                          {(['yield', 'muda', 'kpg'] as const).map(m => (
+                          {(['yield', 'muda', 'kpg', 'efb'] as const).map(m => (
                             <button 
                               key={m}
                               onClick={() => {
                                 setChartMetric(m);
-                                setReportType(m === 'yield' ? 'hasil' : m === 'muda' ? 'muda' : 'kpa_kpg');
+                                setReportType(m === 'yield' ? 'hasil' : m === 'muda' ? 'muda' : m === 'efb' ? 'efb' : 'kpa_kpg');
                               }}
                               className={`flex-1 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all duration-300 ${chartMetric === m ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/10' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                             >
-                              {m === 'yield' ? 'Hasil' : m === 'muda' ? 'Muda' : 'KPG'}
+                              {m === 'yield' ? 'Hasil' : m === 'muda' ? 'Muda' : m === 'efb' ? 'EFB' : 'KPG'}
                             </button>
                           ))}
                         </div>
@@ -3815,14 +3913,14 @@ PERATURAN TEKNIKAL:
 
                         const chartData = [...periodData.blokStats]
                           .filter(d => {
-                            const val = chartMetric === 'yield' ? d.yieldHek : chartMetric === 'muda' ? d.muda : d.kpg_match_count;
+                            const val = chartMetric === 'yield' ? d.yieldHek : chartMetric === 'muda' ? d.muda : chartMetric === 'efb' ? d.efb_tan : d.kpg_match_count;
                             return !isNaN(val) && !isNaN(parseInt(d.blok));
                           })
                           .sort((a, b) => parseInt(a.blok) - parseInt(b.blok));
 
                         if (chartData.length === 0) return <div className="flex items-center justify-center h-full text-[10px] font-bold text-slate-400">Tiada data untuk dipaparkan.</div>;
 
-                        const values = chartData.map(d => chartMetric === 'yield' ? d.yieldHek : chartMetric === 'muda' ? d.muda : d.kpg_match_count);
+                        const values = chartData.map(d => chartMetric === 'yield' ? d.yieldHek : chartMetric === 'muda' ? d.muda : chartMetric === 'efb' ? d.efb_tan : d.kpg_match_count);
                         const maxValue = Math.max(...values);
                         const minValue = Math.min(...values.filter(v => v > 0)); // Only non-zero min
 
@@ -3851,10 +3949,10 @@ PERATURAN TEKNIKAL:
                                   if (active && payload && payload.length) {
                                     const data = payload[0]?.payload;
                                     if (!data) return null;
-                                    const val = chartMetric === 'yield' ? data.yieldHek : chartMetric === 'muda' ? data.muda : data.kpg_match_count;
+                                    const val = chartMetric === 'yield' ? data.yieldHek : chartMetric === 'muda' ? data.muda : chartMetric === 'efb' ? data.efb_tan : data.kpg_match_count;
                                     const target = data.targetHek;
-                                    const unit = chartMetric === 'yield' ? 'T/H' : chartMetric === 'muda' ? 'Bts' : 'Resit';
-                                    const label = chartMetric === 'yield' ? 'Hasil' : chartMetric === 'muda' ? 'Muda' : 'KPG Match';
+                                    const unit = chartMetric === 'yield' ? 'T/H' : chartMetric === 'muda' ? 'Bts' : chartMetric === 'efb' ? 'Tan' : 'Resit';
+                                    const label = chartMetric === 'yield' ? 'Hasil' : chartMetric === 'muda' ? 'Muda' : chartMetric === 'efb' ? 'EFB' : 'KPG Match';
                                     
                                     const isMax = val === maxValue && val > 0;
                                     const isMin = val === minValue && val > 0;
@@ -3890,26 +3988,26 @@ PERATURAN TEKNIKAL:
                               />
                             )}
                             <Bar 
-                              dataKey={chartMetric === 'yield' ? 'yieldHek' : chartMetric === 'muda' ? 'muda' : 'kpg_match_count'} 
+                              dataKey={chartMetric === 'yield' ? 'yieldHek' : chartMetric === 'muda' ? 'muda' : chartMetric === 'efb' ? 'efb_tan' : 'kpg_match_count'} 
                               radius={[2, 2, 0, 0]}
                               animationDuration={1200}
                               activeBar={{ fillOpacity: 0.8, stroke: isDarkMode ? '#fff' : '#000', strokeWidth: 1 }}
                             >
                               {chartData.map((entry, index) => {
-                                const val = chartMetric === 'yield' ? entry.yieldHek : chartMetric === 'muda' ? entry.muda : entry.kpg_match_count;
-                                let color = chartMetric === 'yield' ? CHART_COLORS.green : chartMetric === 'muda' ? '#f43f5e' : '#0ea5e9';
-                                const maxColor = chartMetric === 'yield' ? '#059669' : chartMetric === 'muda' ? '#e11d48' : '#0284c7';
+                                const val = chartMetric === 'yield' ? entry.yieldHek : chartMetric === 'muda' ? entry.muda : chartMetric === 'efb' ? entry.efb_tan : entry.kpg_match_count;
+                                let color = chartMetric === 'yield' ? CHART_COLORS.green : chartMetric === 'muda' ? '#f43f5e' : chartMetric === 'efb' ? '#8b5cf6' : '#0ea5e9';
+                                const maxColor = chartMetric === 'yield' ? '#059669' : chartMetric === 'muda' ? '#e11d48' : chartMetric === 'efb' ? '#7c3aed' : '#0284c7';
                                 if (val === maxValue && val > 0) color = maxColor;
                                 if (val === minValue && val > 0) color = '#e11d48'; // Keep rose for min
                                 return <Cell key={`cell-${index}`} fill={color} />;
                               })}
                               <LabelList 
-                                dataKey={chartMetric === 'yield' ? 'yieldHek' : chartMetric === 'muda' ? 'muda' : 'kpg_match_count'} 
+                                dataKey={chartMetric === 'yield' ? 'yieldHek' : chartMetric === 'muda' ? 'muda' : chartMetric === 'efb' ? 'efb_tan' : 'kpg_match_count'} 
                                 position="top" 
                                 angle={-90}
                                 offset={8}
                                 formatter={(val: number) => {
-                                  let text = chartMetric === 'yield' ? val.toFixed(1) : val.toString();
+                                  let text = chartMetric === 'yield' ? val.toFixed(1) : (chartMetric === 'efb' ? val.toFixed(1) : val.toString());
                                   if (val === maxValue && val > 0) return `▲ ${text}`;
                                   if (val === minValue && val > 0) return `▼ ${text}`;
                                   return text;
@@ -4346,7 +4444,14 @@ PERATURAN TEKNIKAL:
                                   <div className="text-[9px] text-slate-400 dark:text-slate-500">{row.no_seal || '-'}</div>
                                 </td>
                                 <td className="p-3 font-bold text-rose-500">{row.muda}</td>
-                                <td className="p-3 font-bold">B{row.blok}</td>
+                                <td className="p-3 font-bold">
+                                  <div className="flex flex-col">
+                                    <span>B{row.blok}</span>
+                                    {row.peringkat === 'EFB' && (
+                                      <span className="text-[8px] bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 px-1.5 py-0.5 rounded-md font-black mt-1 w-fit">EFB</span>
+                                    )}
+                                  </div>
+                                </td>
                                 <td className={`p-3 font-bold ${parseFloat(row.kpg || "0") >= 21 ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg' : 'text-slate-500 dark:text-slate-400'}`}>
                                   {row.kpg || '-'}
                                 </td>
@@ -4662,10 +4767,10 @@ PERATURAN TEKNIKAL:
                                 if (active && payload && payload.length) {
                                   const data = payload[0]?.payload;
                                   if (!data) return null;
-                                  const val = chartMetric === 'yield' ? data.yieldHek : chartMetric === 'muda' ? data.muda : data.kpg_match_count;
+                                  const val = chartMetric === 'yield' ? data.yieldHek : chartMetric === 'muda' ? data.muda : chartMetric === 'efb' ? data.efb_tan : data.kpg_match_count;
                                   const target = data.targetHek;
-                                  const unit = chartMetric === 'yield' ? 'T/H' : chartMetric === 'muda' ? 'Bts' : 'Resit';
-                                  const label = chartMetric === 'yield' ? 'Hasil' : chartMetric === 'muda' ? 'Muda' : 'KPG Match';
+                                  const unit = chartMetric === 'yield' ? 'T/H' : chartMetric === 'muda' ? 'Bts' : chartMetric === 'efb' ? 'Tan' : 'Resit';
+                                  const label = chartMetric === 'yield' ? 'Hasil' : chartMetric === 'muda' ? 'Muda' : chartMetric === 'efb' ? 'EFB' : 'KPG Match';
                                   
                                   const isMax = val === maxValue && val > 0;
                                   const isMin = val === minValue && val > 0;
@@ -4727,23 +4832,24 @@ PERATURAN TEKNIKAL:
                             />
                           )}
                           <Bar 
-                            dataKey={chartMetric === 'yield' ? 'yieldHek' : chartMetric === 'muda' ? 'muda' : 'kpg_match_count'} 
+                            dataKey={chartMetric === 'yield' ? 'yieldHek' : chartMetric === 'muda' ? 'muda' : chartMetric === 'efb' ? 'efb_tan' : 'kpg_match_count'} 
                             radius={[6, 6, 0, 0]}
                             animationDuration={1500}
                           >
                             {chartData.map((entry, index) => {
-                              const val = chartMetric === 'yield' ? entry.yieldHek : chartMetric === 'muda' ? entry.muda : entry.kpg_match_count;
-                              let color = CHART_COLORS.green;
-                              if (val === maxValue && val > 0) color = '#059669';
+                              const val = chartMetric === 'yield' ? entry.yieldHek : chartMetric === 'muda' ? entry.muda : chartMetric === 'efb' ? entry.efb_tan : entry.kpg_match_count;
+                              let color = chartMetric === 'yield' ? CHART_COLORS.green : chartMetric === 'muda' ? '#f43f5e' : chartMetric === 'efb' ? '#8b5cf6' : '#0ea5e9';
+                              const maxColor = chartMetric === 'yield' ? '#059669' : chartMetric === 'muda' ? '#e11d48' : chartMetric === 'efb' ? '#7c3aed' : '#0284c7';
+                              if (val === maxValue && val > 0) color = maxColor;
                               if (val === minValue && val > 0) color = '#e11d48';
                               return <Cell key={`cell-${index}`} fill={color} />;
                             })}
                             <LabelList 
-                              dataKey={chartMetric === 'yield' ? 'yieldHek' : chartMetric === 'muda' ? 'muda' : 'kpg_match_count'} 
+                              dataKey={chartMetric === 'yield' ? 'yieldHek' : chartMetric === 'muda' ? 'muda' : chartMetric === 'efb' ? 'efb_tan' : 'kpg_match_count'} 
                               position="top" 
                               offset={15}
                               formatter={(val: number) => {
-                                let text = chartMetric === 'yield' ? val.toFixed(2) : val.toString();
+                                let text = chartMetric === 'yield' ? val.toFixed(2) : (chartMetric === 'efb' ? val.toFixed(1) : val.toString());
                                 if (val === maxValue && val > 0) return `▲ MAX ${text}`;
                                 if (val === minValue && val > 0) return `▼ MIN ${text}`;
                                 return text;
