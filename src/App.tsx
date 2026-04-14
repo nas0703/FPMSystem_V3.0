@@ -1391,7 +1391,7 @@ export default function App() {
 
         // Headers
         const headerRowIndex = startRow + 3;
-        const headers = ['Bil', 'Tarikh', 'Blok', 'No. Akaun Terima', 'Nota Hantaran', 'Berat Bersih (Tan)', 'RM / MT', 'Hasil (RM)', 'Tandan Muda', 'Reject', 'Sample', 'KPG'];
+        const headers = ['Bil', 'Tarikh', 'Blok', 'No. Akaun Terima', 'Nota Hantaran', 'Berat Bersih (Tan)', 'Harga/tan', 'Hasil (RM)', 'Tandan Muda', 'Reject', 'Sample', 'KPG'];
         const headerRow = worksheet.getRow(headerRowIndex);
         headerRow.values = headers;
         headerRow.height = 30;
@@ -1971,6 +1971,7 @@ LOGIK EKSTRAKSI (RESIT FGV):
 - kpg: Cari baris yang sama dengan "Nota Hantaran". Ambil digit dengan 2 titik perpuluhan yang berada selepas corak "21.00/" (cth: jika "21.00/19.50", ambil "19.50").
 - blok: Cari baris "Penjual". Ambil 2 digit nombor yang berada tepat sebelum perkataan "SKB" (cth: jika "12 SKB", ambil "12").
 - tan: Cari label "Nett.". Ambil nilai nombor (tan) di sebelahnya (cth: 3.24). 
+- rm_mt: Cari label "Harga/Tan" (biasanya di bawah nilai Kpg/Kpa). Ambil nilai nombor di sebelahnya (cth: 1020.23).
 - muda: pada baris >25 0, Muda, ambil number selepas 'muda :' biasanya 1 atau 2 digit (tandan).
 - no_seal: Cari tulisan tangan 6-digit nombor yang terletak di bawah "M-Manual" di bahagian bawah kanan resit.
 - is_efb: false
@@ -2004,6 +2005,7 @@ PERATURAN TEKNIKAL:
               kpg: { type: Type.NUMBER, description: "Nilai KPG (2 titik perpuluhan selepas 21.00/)" },
               blok: { type: Type.STRING, description: "Nombor blok (2 digit sebelum SKB)" },
               tan: { type: Type.NUMBER, description: "Berat bersih (Nett) dalam Tan" },
+              rm_mt: { type: Type.NUMBER, description: "Harga per Tan (Harga/Tan)" },
               muda: { type: Type.NUMBER, description: "Bilangan tandan muda" },
               no_seal: { type: Type.STRING, description: "Nombor seal (6 digit tulisan tangan di bawah M-Manual)" },
               is_efb: { type: Type.BOOLEAN, description: "Adakah ini resit EFB?" },
@@ -2029,6 +2031,7 @@ PERATURAN TEKNIKAL:
           no_seal: result.no_seal || prev.no_seal,
           kpg: result.kpg?.toString() || prev.kpg,
           tan: result.tan?.toString() || prev.tan,
+          rm_mt: result.rm_mt?.toString() || prev.rm_mt,
           muda: result.muda?.toString() || prev.muda,
           tarikh: result.tarikh || prev.tarikh,
           masa_masuk: result.masa_masuk || prev.masa_masuk,
@@ -3261,7 +3264,7 @@ PERATURAN TEKNIKAL:
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                               <FloatingInput label="No. Seal" value={formData.no_seal} onChange={v => setFormData({...formData, no_seal: v})} />
-                              <FloatingInput label="RM / MT" type="number" step="0.01" value={formData.rm_mt} onChange={v => setFormData({...formData, rm_mt: v})} />
+                              <FloatingInput label="Harga/tan" type="number" step="0.01" value={formData.rm_mt} onChange={v => setFormData({...formData, rm_mt: v})} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                               <FloatingInput label="KPG" value={formData.kpg} onChange={v => setFormData({...formData, kpg: v})} />
