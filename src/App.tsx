@@ -1973,6 +1973,8 @@ LOGIK EKSTRAKSI (RESIT FGV):
 - tan: Cari label "Nett.". Ambil nilai nombor (tan) di sebelahnya (cth: 3.24). 
 - rm_mt: Cari label "Harga/Tan" (biasanya di bawah nilai Kpg/Kpa). Ambil nilai nombor di sebelahnya (cth: 1020.23).
 - muda: pada baris >25 0, Muda, ambil number selepas 'muda :' biasanya 1 atau 2 digit (tandan).
+- reject: Cari label "Reject". Ambil nilai nombor di sebelahnya.
+- sample: Cari label "Sampel". Ambil nilai nombor 1, 2 atau 3 di sebelahnya.
 - no_seal: Cari tulisan tangan 6-digit nombor yang terletak di bawah "M-Manual" di bahagian bawah kanan resit.
 - is_efb: false
 
@@ -2007,6 +2009,8 @@ PERATURAN TEKNIKAL:
               tan: { type: Type.NUMBER, description: "Berat bersih (Nett) dalam Tan" },
               rm_mt: { type: Type.NUMBER, description: "Harga per Tan (Harga/Tan)" },
               muda: { type: Type.NUMBER, description: "Bilangan tandan muda" },
+              reject: { type: Type.NUMBER, description: "Berat reject" },
+              sample: { type: Type.NUMBER, description: "Bilangan sampel (1, 2, atau 3)" },
               no_seal: { type: Type.STRING, description: "Nombor seal (6 digit tulisan tangan di bawah M-Manual)" },
               is_efb: { type: Type.BOOLEAN, description: "Adakah ini resit EFB?" },
               confidence: { type: Type.NUMBER, description: "Tahap keyakinan 0-100" }
@@ -2033,6 +2037,8 @@ PERATURAN TEKNIKAL:
           tan: result.tan?.toString() || prev.tan,
           rm_mt: result.rm_mt?.toString() || prev.rm_mt,
           muda: result.muda?.toString() || prev.muda,
+          reject: result.reject?.toString() || prev.reject,
+          sample: result.sample?.toString() || prev.sample,
           tarikh: result.tarikh || prev.tarikh,
           masa_masuk: result.masa_masuk || prev.masa_masuk,
           is_efb: !!result.is_efb,
