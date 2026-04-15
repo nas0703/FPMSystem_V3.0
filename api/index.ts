@@ -37,6 +37,10 @@ router.use((req, res, next) => {
 });
 
 // API Routes
+router.get("/", (req, res) => {
+  res.json({ success: true, message: "FPMSB TUNGGAL API Engine is running." });
+});
+
 router.post("/hantaran", async (req, res) => {
   try {
     const data = req.body;
@@ -411,18 +415,20 @@ router.post("/export/pptx", async (req, res) => {
 const app = express();
 app.use(express.json());
 app.use("/api", router);
-app.use("/", router);
 
 // Global error handler
 app.use((err: any, req: any, res: any, next: any) => {
-  console.error("Global error handler:", err);
-  res.status(500).json({ success: false, error: err.message || "Ralat pelayan dalaman." });
+  if (req.path.startsWith('/api')) {
+    console.error("API Error handler:", err);
+    return res.status(500).json({ success: false, error: err.message || "Ralat pelayan dalaman." });
+  }
+  next(err);
 });
 
-// 404 handler
-app.use((req, res) => {
-  console.warn(`404 Not Found: ${req.method} ${req.url}`);
-  res.status(404).json({ success: false, error: `Laluan ${req.method} ${req.url} tidak dijumpai.` });
+// API 404 handler - only for /api routes
+app.use("/api", (req, res) => {
+  console.warn(`API 404 Not Found: ${req.method} ${req.url}`);
+  res.status(404).json({ success: false, error: `Laluan API ${req.method} ${req.url} tidak dijumpai.` });
 });
 
 export default app;

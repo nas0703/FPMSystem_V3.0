@@ -1332,13 +1332,17 @@ export default function App() {
       ws.getColumn('I').width = 10;
     };
 
+    // CRITICAL: Separate EFB and FFB (Hasil) data to prevent mixing in Excel
+    const ffbData = filteredData.filter(item => item.peringkat !== 'EFB');
+    const efbData = filteredData.filter(item => item.peringkat === 'EFB');
+
     if (reportType === 'efc_format') {
       // 1. Master Data Sheet
       const masterSheet = workbook.addWorksheet('Master Data');
-      createEfcSheet(masterSheet, filteredData);
+      createEfcSheet(masterSheet, ffbData);
 
       // 2. Individual Block Sheets
-      const uniqueBlocks = Array.from(new Set(filteredData.map(d => d.blok))).sort((a, b) => {
+      const uniqueBlocks = Array.from(new Set(ffbData.map(d => d.blok))).sort((a, b) => {
         const strA = String(a);
         const strB = String(b);
         const numA = parseInt(strA);
@@ -1348,7 +1352,7 @@ export default function App() {
       });
 
       uniqueBlocks.forEach(blok => {
-        const blokData = filteredData.filter(d => d.blok === blok);
+        const blokData = ffbData.filter(d => d.blok === blok);
         if (blokData.length > 0) {
           const blokSheet = workbook.addWorksheet(`Blok ${blok}`);
           createEfcSheet(blokSheet, blokData);
@@ -1361,8 +1365,8 @@ export default function App() {
       const currentMonth = exportFilter === 'month' ? monthNames[parseInt(exportMonth.split('-')[1]) - 1] : monthNames[new Date().getMonth()];
       const currentYear = exportFilter === 'month' ? exportMonth.split('-')[0] : new Date().getFullYear();
 
-      // Filter data for KPG >= 21
-      const kpgData = filteredData.filter(item => parseFloat(item.kpg || '0') >= 21);
+      // Filter data for KPG >= 21 (Exclude EFB)
+      const kpgData = ffbData.filter(item => parseFloat(item.kpg || '0') >= 21);
       
       // Split into Standard and Felda
       const standardData = kpgData.filter(item => {
@@ -1491,9 +1495,9 @@ export default function App() {
       });
       headerRow.height = 25;
 
-      // Calculate data
+      // Calculate data (Exclude EFB)
       const blockSummary: { blok: string, pkt: string, totalResit: number, kpgMatch: number }[] = [];
-      const uniqueBlocks = (Array.from(new Set(filteredData.map(d => d.blok))) as string[]).sort((a, b) => {
+      const uniqueBlocks = (Array.from(new Set(ffbData.map(d => d.blok))) as string[]).sort((a, b) => {
         const numA = parseInt(a);
         const numB = parseInt(b);
         if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
@@ -1501,7 +1505,7 @@ export default function App() {
       });
       
       uniqueBlocks.forEach((blok: string) => {
-        const blokData = filteredData.filter(d => d.blok === blok);
+        const blokData = ffbData.filter(d => d.blok === blok);
         const kpgMatch = blokData.filter(item => parseFloat(item.kpg || '0') >= 21).length;
         const pkt = (MASTER_DATA as any)[blok]?.pkt || '-';
         blockSummary.push({ blok, pkt, totalResit: blokData.length, kpgMatch });
@@ -1573,16 +1577,15 @@ export default function App() {
 
     } else if (reportType === 'efb') {
       const worksheet = workbook.addWorksheet('Rekod EFB');
-      const efbData = filteredData.filter(item => item.peringkat === 'EFB');
       createStandardSheet(worksheet, efbData, 'LAPORAN PENGHANTARAN EFB (TANDAN KOSONG)');
     } else {
-      // Standard report sheets
+      // Standard report sheets (Exclude EFB)
       const worksheet = workbook.addWorksheet('Rekod Hantaran');
-      createStandardSheet(worksheet, filteredData, `LAPORAN ANALITIK: ${reportType.toUpperCase()}`, true);
+      createStandardSheet(worksheet, ffbData, `LAPORAN ANALITIK: ${reportType.toUpperCase()}`, true);
 
       // If it's 'hasil', also create individual block sheets
       if (reportType === 'hasil') {
-        const uniqueBlocks = Array.from(new Set(filteredData.map(d => d.blok))).sort((a, b) => {
+        const uniqueBlocks = Array.from(new Set(ffbData.map(d => d.blok))).sort((a, b) => {
           const numA = parseInt(String(a));
           const numB = parseInt(String(b));
           if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
@@ -1590,7 +1593,7 @@ export default function App() {
         });
 
         uniqueBlocks.forEach(blok => {
-          const blokData = filteredData.filter(d => d.blok === blok);
+          const blokData = ffbData.filter(d => d.blok === blok);
           if (blokData.length > 0) {
             const blokSheet = workbook.addWorksheet(`Blok ${blok}`);
             createStandardSheet(blokSheet, blokData, `REKOD HANTARAN BLOK ${blok}`);
@@ -1941,88 +1944,21 @@ export default function App() {
 
       const base64Data = await base64Promise;
 
-      const apiKey = process.env.GEMINI_API_KEY;
-      
-      if (!apiKey || apiKey === 'undefined') {
-        throw new Error('API Key Gemini tidak dijumpai. Sila masukkan GEMINI_API_KEY di tetapan Vercel dan redeploy.');
-      }
-
-      const ai = new GoogleGenAI({ apiKey });
-      
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: {
-          parts: [
-            {
-              inlineData: {
-                data: base64Data,
-                mimeType: file.type || 'image/jpeg',
-              },
-            },
-            {
-              text: `Anda adalah pakar OCR khusus untuk resit FGV Trading Sdn. Bhd dan resit EFB (Tandan Kosong). Ekstrak data dengan ketepatan 100% mengikut peraturan berikut:
-
-LOGIK EKSTRAKSI (RESIT FGV):
-- tarikh: Cari label "Tarikh Urusniaga". Gunakan format YYYY-MM-DD.
-- masa_masuk: Cari baris "Gross". Ambil waktu (HH:MM:SS) yang berada di bawah kolum "Masa".
-- no_resit: Ambil nilai di sebelah "No. Akuan Terima" (cth: A00008947). Nilai ini juga digunakan sebagai No. Akaun Terima.
-- no_lori: Ambil nilai di sebelah "No. Lori" (cth: CCR1449).
-- no_nota_hantaran: Ambil nilai 10-digit di sebelah "Nota Hantaran" (cth: 1552600137).
-- kpg: Cari baris yang sama dengan "Nota Hantaran". Ambil digit dengan 2 titik perpuluhan yang berada selepas corak "21.00/" (cth: jika "21.00/19.50", ambil "19.50").
-- blok: Cari baris "Penjual". Ambil 2 digit nombor yang berada tepat sebelum perkataan "SKB" (cth: jika "12 SKB", ambil "12").
-- tan: Cari label "Nett.". Ambil nilai nombor (tan) di sebelahnya (cth: 3.24). 
-- rm_mt: Cari label "Harga/Tan" (biasanya di bawah nilai Kpg/Kpa). Ambil nilai nombor di sebelahnya (cth: 1020.23).
-- muda: pada baris >25 0, Muda, ambil number selepas 'muda :' biasanya 1 atau 2 digit (tandan).
-- reject: Cari label "Reject". Ambil nilai nombor di sebelahnya.
-- sample: Cari label "Sampel". Ambil nilai nombor 1, 2 atau 3 di sebelahnya.
-- no_seal: Cari tulisan tangan 6-digit nombor yang terletak di bawah "M-Manual" di bahagian bawah kanan resit.
-- is_efb: false
-
-LOGIK EKSTRAKSI (RESIT EFB):
-- tarikh: Cari label "Tarikh Urusniaga". Gunakan format YYYY-MM-DD.
-- no_lori: Cari label "No. Lori".
-- tan: Cari label "Nett". Ambil nilai nombor di sebelahnya (cth: 5.20).
-- blok: Cari label "No. MPOB". Blok adalah 1 atau 2 digit nombor (biasanya tulisan tangan) yang berada tepat di bawah label "No. MPOB".
-- no_resit: Cari sebarang nombor siri atau "No. Resit" di bahagian atas. Jika tiada, gunakan "EFB-" diikuti No. Lori dan Tarikh tanpa sengkang.
-- is_efb: true (WAJIB true jika resit bertajuk "TANDAN KOSONG" atau "EFB")
-
-PERATURAN TEKNIKAL:
-1. Output WAJIB dalam format JSON sahaja.
-2. Nilai "tan", "kpg", dan "muda" mestilah jenis 'number'.
-3. Jika tulisan kabur, bandingkan Nett = Gross - Tare. Gunakan hasil matematik tersebut.
-4. Tentukan is_efb berdasarkan kandungan resit.`,
-            },
-          ],
+      // Call server-side OCR endpoint
+      const response = await fetch('/api/ocr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              tarikh: { type: Type.STRING, description: "Tarikh Urusniaga (YYYY-MM-DD)" },
-              masa_masuk: { type: Type.STRING, description: "Masa Masuk (HH:MM:SS)" },
-              no_resit: { type: Type.STRING, description: "Nombor Resit / Akuan Terima" },
-              no_lori: { type: Type.STRING, description: "Nombor Lori" },
-              no_nota_hantaran: { type: Type.STRING, description: "Nombor Nota Hantaran (10 digit)" },
-              kpg: { type: Type.NUMBER, description: "Nilai KPG (2 titik perpuluhan selepas 21.00/)" },
-              blok: { type: Type.STRING, description: "Nombor blok (2 digit sebelum SKB)" },
-              tan: { type: Type.NUMBER, description: "Berat bersih (Nett) dalam Tan" },
-              rm_mt: { type: Type.NUMBER, description: "Harga per Tan (Harga/Tan)" },
-              muda: { type: Type.NUMBER, description: "Bilangan tandan muda" },
-              reject: { type: Type.NUMBER, description: "Berat reject" },
-              sample: { type: Type.NUMBER, description: "Bilangan sampel (1, 2, atau 3)" },
-              no_seal: { type: Type.STRING, description: "Nombor seal (6 digit tulisan tangan di bawah M-Manual)" },
-              is_efb: { type: Type.BOOLEAN, description: "Adakah ini resit EFB?" },
-              confidence: { type: Type.NUMBER, description: "Tahap keyakinan 0-100" }
-            },
-            required: ["tarikh", "no_resit", "no_lori", "tan", "confidence"]
-          }
-        }
+        body: JSON.stringify({ image: base64Data }),
       });
 
-      const rawText = response.text || "{}";
-      const cleanText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-      const result = JSON.parse(cleanText);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Gagal memproses imej.');
+      }
+
+      const { result } = await response.json();
       console.log("GEMINI OCR RESULT:", result);
 
       if (result.no_resit || result.no_lori || result.tan) {
@@ -3445,21 +3381,23 @@ PERATURAN TEKNIKAL:
                           >
                             {/* FILTERS FOR TREND CHART */}
                             <div className="flex gap-1.5 mb-2 mt-1">
-                              <div className="flex-1">
-                                <label className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-0.5 block ml-1">Peringkat</label>
-                                <select 
-                                  value={selectedPactFilter}
-                                  onChange={(e) => {
-                                    setSelectedPactFilter(e.target.value);
-                                    setSelectedBlockFilter('all');
-                                  }}
-                                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-md px-1.5 py-1 text-[9px] font-bold outline-none focus:ring-1 focus:ring-emerald-500 transition-all"
-                                >
-                                  <option value="all">Semua Peringkat</option>
-                                  <option value="001">Peringkat 1</option>
-                                  <option value="002">Peringkat 2</option>
-                                </select>
-                              </div>
+                              {reportType !== 'efb' && (
+                                <div className="flex-1">
+                                  <label className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-0.5 block ml-1">Peringkat</label>
+                                  <select 
+                                    value={selectedPactFilter}
+                                    onChange={(e) => {
+                                      setSelectedPactFilter(e.target.value);
+                                      setSelectedBlockFilter('all');
+                                    }}
+                                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-md px-1.5 py-1 text-[9px] font-bold outline-none focus:ring-1 focus:ring-emerald-500 transition-all"
+                                  >
+                                    <option value="all">Semua Peringkat</option>
+                                    <option value="001">Peringkat 1</option>
+                                    <option value="002">Peringkat 2</option>
+                                  </select>
+                                </div>
+                              )}
                               <div className="flex-1">
                                 <label className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-0.5 block ml-1">Blok</label>
                                 <select 
@@ -3469,7 +3407,7 @@ PERATURAN TEKNIKAL:
                                 >
                                   <option value="all">Semua Blok</option>
                                   {Object.keys(MASTER_DATA)
-                                    .filter(b => selectedPactFilter === 'all' || MASTER_DATA[b].pkt === selectedPactFilter)
+                                    .filter(b => reportType === 'efb' || selectedPactFilter === 'all' || MASTER_DATA[b].pkt === selectedPactFilter)
                                     .map(b => (
                                       <option key={b} value={b}>Blok {b}</option>
                                     ))
@@ -3533,7 +3471,7 @@ PERATURAN TEKNIKAL:
                                 </div>
                               </div>
 
-                              <div className="grid grid-cols-3 gap-1.5">
+                              <div className={`grid ${reportType === 'efb' ? 'grid-cols-1' : 'grid-cols-3'} gap-1.5`}>
                                 {/* 1. Purata Keseluruhan Mini */}
                                 <motion.div 
                                   whileTap={{ scale: 0.95 }}
@@ -3552,41 +3490,45 @@ PERATURAN TEKNIKAL:
                                   </div>
                                 </motion.div>
 
-                                {/* 2. Peringkat 1 Mini */}
-                                <motion.div 
-                                  whileTap={{ scale: 0.95 }}
-                                  onClick={() => { setSelectedPactFilter('001'); setSelectedBlockFilter('all'); }}
-                                  className={`p-2 rounded-xl border transition-all cursor-pointer ${selectedPactFilter === '001' ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' : 'bg-slate-50/50 dark:bg-slate-800/30 border-slate-100 dark:border-slate-800'}`}
-                                >
-                                  <div className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
-                                    <div className="w-1 h-1 bg-blue-500 rounded-full" /> Peringkat 1
-                                  </div>
-                                  <div className="h-12 w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                      <BarChart data={analytics.monthlyTrend}>
-                                        <Bar dataKey={reportType === 'hasil' ? 'pkt1' : reportType === 'muda' ? 'pkt1Muda' : reportType === 'efb' ? 'efb' : 'pkt1Kpg'} fill="#3b82f6" radius={[2, 2, 0, 0]} />
-                                      </BarChart>
-                                    </ResponsiveContainer>
-                                  </div>
-                                </motion.div>
+                                {reportType !== 'efb' && (
+                                  <>
+                                    {/* 2. Peringkat 1 Mini */}
+                                    <motion.div 
+                                      whileTap={{ scale: 0.95 }}
+                                      onClick={() => { setSelectedPactFilter('001'); setSelectedBlockFilter('all'); }}
+                                      className={`p-2 rounded-xl border transition-all cursor-pointer ${selectedPactFilter === '001' ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' : 'bg-slate-50/50 dark:bg-slate-800/30 border-slate-100 dark:border-slate-800'}`}
+                                    >
+                                      <div className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                                        <div className="w-1 h-1 bg-blue-500 rounded-full" /> Peringkat 1
+                                      </div>
+                                      <div className="h-12 w-full">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                          <BarChart data={analytics.monthlyTrend}>
+                                            <Bar dataKey={reportType === 'hasil' ? 'pkt1' : reportType === 'muda' ? 'pkt1Muda' : reportType === 'efb' ? 'efb' : 'pkt1Kpg'} fill="#3b82f6" radius={[2, 2, 0, 0]} />
+                                          </BarChart>
+                                        </ResponsiveContainer>
+                                      </div>
+                                    </motion.div>
 
-                                {/* 3. Peringkat 2 Mini */}
-                                <motion.div 
-                                  whileTap={{ scale: 0.95 }}
-                                  onClick={() => { setSelectedPactFilter('002'); setSelectedBlockFilter('all'); }}
-                                  className={`p-2 rounded-xl border transition-all cursor-pointer ${selectedPactFilter === '002' ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800' : 'bg-slate-50/50 dark:bg-slate-800/30 border-slate-100 dark:border-slate-800'}`}
-                                >
-                                  <div className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
-                                    <div className="w-1 h-1 bg-amber-500 rounded-full" /> Peringkat 2
-                                  </div>
-                                  <div className="h-12 w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                      <BarChart data={analytics.monthlyTrend}>
-                                        <Bar dataKey={reportType === 'hasil' ? 'pkt2' : reportType === 'muda' ? 'pkt2Muda' : reportType === 'efb' ? 'efb' : 'pkt2Kpg'} fill="#f59e0b" radius={[2, 2, 0, 0]} />
-                                      </BarChart>
-                                    </ResponsiveContainer>
-                                  </div>
-                                </motion.div>
+                                    {/* 3. Peringkat 2 Mini */}
+                                    <motion.div 
+                                      whileTap={{ scale: 0.95 }}
+                                      onClick={() => { setSelectedPactFilter('002'); setSelectedBlockFilter('all'); }}
+                                      className={`p-2 rounded-xl border transition-all cursor-pointer ${selectedPactFilter === '002' ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800' : 'bg-slate-50/50 dark:bg-slate-800/30 border-slate-100 dark:border-slate-800'}`}
+                                    >
+                                      <div className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                                        <div className="w-1 h-1 bg-amber-500 rounded-full" /> Peringkat 2
+                                      </div>
+                                      <div className="h-12 w-full">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                          <BarChart data={analytics.monthlyTrend}>
+                                            <Bar dataKey={reportType === 'hasil' ? 'pkt2' : reportType === 'muda' ? 'pkt2Muda' : reportType === 'efb' ? 'efb' : 'pkt2Kpg'} fill="#f59e0b" radius={[2, 2, 0, 0]} />
+                                          </BarChart>
+                                        </ResponsiveContainer>
+                                      </div>
+                                    </motion.div>
+                                  </>
+                                )}
                               </div>
                             </div>
                           </motion.div>
