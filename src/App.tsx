@@ -1933,7 +1933,7 @@ export default function App() {
     if (!file) return;
 
     setIsScanning(true);
-    showToast('success', 'Menganalisis resit dengan Gemini AI...');
+    showToast('success', 'Menganalisis resit dengan Gemini 3 Flash...');
 
     try {
       // Convert file to base64
@@ -1948,28 +1948,78 @@ export default function App() {
 
       const base64Data = await base64Promise;
 
-      // Call server-side OCR endpoint
-      const response = await fetch('/api/ocr', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ image: base64Data }),
+      // Initialize Gemini AI in frontend
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+      
+      const prompt = `
+        Analyze this palm oil plantation receipt and extract the following information in JSON format:
+        - no_resit: The receipt number (Nota Hantaran or similar)
+        - no_akaun_terima: Account number if present
+        - no_lori: Vehicle plate number
+        - no_nota_hantaran: Delivery note number
+        - no_seal: Seal number if present
+        - kpg: KPG value (usually a decimal number)
+        - blok: Block number (usually a number like 1-22)
+        - tan: Net weight in Tonnes (NETT)
+        - muda: Number of young bunches (Muda)
+        - reject: Number of rejected bunches
+        - sample: Number of sample bunches
+        - rm_mt: Price per MT (RM/MT)
+        - tarikh: Date in YYYY-MM-DD format
+        - masa_masuk: Time in HH:mm format
+        - is_efb: Boolean, true if the receipt is for EFB (Empty Fresh Fruit Bunches) or Tandan Kosong.
+        - confidence: Your confidence score from 0-100.
+
+        Return ONLY the JSON object.
+      `;
+
+      const imagePart = {
+        inlineData: {
+          data: base64Data,
+          mimeType: file.type || "image/jpeg"
+        }
+      };
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: { parts: [imagePart, { text: prompt }] },
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              no_resit: { type: Type.STRING },
+              no_akaun_terima: { type: Type.STRING },
+              no_lori: { type: Type.STRING },
+              no_nota_hantaran: { type: Type.STRING },
+              no_seal: { type: Type.STRING },
+              kpg: { type: Type.NUMBER },
+              blok: { type: Type.STRING },
+              tan: { type: Type.NUMBER },
+              muda: { type: Type.NUMBER },
+              reject: { type: Type.NUMBER },
+              sample: { type: Type.NUMBER },
+              rm_mt: { type: Type.NUMBER },
+              tarikh: { type: Type.STRING },
+              masa_masuk: { type: Type.STRING },
+              is_efb: { type: Type.BOOLEAN },
+              confidence: { type: Type.NUMBER }
+            }
+          }
+        }
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Gagal memproses imej.');
-      }
-
-      const { result } = await response.json();
-      console.log("GEMINI OCR RESULT:", result);
+      const text = response.text;
+      if (!text) throw new Error("Gagal menghuraikan maklumat dari AI.");
+      
+      const result = JSON.parse(text);
+      console.log("GEMINI 3 FLASH OCR RESULT:", result);
 
       if (result.no_resit || result.no_lori || result.tan) {
         setFormData(prev => ({
           ...prev,
           no_resit: result.no_resit || prev.no_resit,
-          no_akaun_terima: result.no_resit || prev.no_resit,
+          no_akaun_terima: result.no_akaun_terima || prev.no_akaun_terima,
           no_lori: result.no_lori || prev.no_lori,
           no_nota_hantaran: result.no_nota_hantaran || prev.no_nota_hantaran,
           no_seal: result.no_seal || prev.no_seal,
@@ -1985,10 +2035,11 @@ export default function App() {
           blok: result.is_efb ? '99' : (result.blok || prev.blok)
         }));
 
-        if (result.confidence < 70) {
-          showToast('error', `⚠️ Accuracy rendah (${result.confidence}%). Sila semak maklumat.`);
+        const confidence = result.confidence || 0;
+        if (confidence < 70) {
+          showToast('error', `⚠️ Accuracy rendah (${confidence}%). Sila semak maklumat.`);
         } else {
-          showToast('success', result.is_efb ? `✅ Scan EFB berjaya (${result.confidence}%)` : `✅ Scan berjaya (${result.confidence}%)`);
+          showToast('success', result.is_efb ? `✅ Scan EFB berjaya (${confidence}%)` : `✅ Scan berjaya (${confidence}%)`);
         }
       } else {
         showToast('error', 'Gagal mengekstrak maklumat. Sila isi secara manual.');
