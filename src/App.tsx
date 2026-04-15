@@ -1155,17 +1155,21 @@ export default function App() {
       const activeCols = allPossibleColumns.filter(c => exportColumns.includes(c.key) || c.key === 'tarikh');
       ws.columns = activeCols;
 
-      // Style Header Row
+      // Style Header Row (Row 6)
       const headerRow = ws.getRow(6);
       headerRow.height = 30;
-      headerRow.eachCell((cell) => {
+      
+      // Manually set header values to ensure visibility
+      activeCols.forEach((col, idx) => {
+        const cell = headerRow.getCell(idx + 1);
+        cell.value = col.header;
         cell.fill = {
           type: 'pattern',
           pattern: 'solid',
           fgColor: { argb: 'FF10B981' } // Emerald 500
         };
-        cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
-        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 };
+        cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
         cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
       });
 
