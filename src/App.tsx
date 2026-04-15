@@ -1952,23 +1952,29 @@ export default function App() {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
       
       const prompt = `
-        Analyze this palm oil plantation receipt and extract the following information in JSON format:
-        - no_resit: The receipt number (Nota Hantaran or similar)
-        - no_akaun_terima: Account number if present
-        - no_lori: Vehicle plate number
-        - no_nota_hantaran: Delivery note number
-        - no_seal: Seal number if present
-        - kpg: KPG value (usually a decimal number)
-        - blok: Block number (usually a number like 1-22)
-        - tan: Net weight in Tonnes (NETT)
-        - muda: Number of young bunches (Muda)
-        - reject: Number of rejected bunches
-        - sample: Number of sample bunches
-        - rm_mt: Price per MT (RM/MT)
-        - tarikh: Date in YYYY-MM-DD format
-        - masa_masuk: Time in HH:mm format
-        - is_efb: Boolean, true if the receipt is for EFB (Empty Fresh Fruit Bunches) or Tandan Kosong.
-        - confidence: Your confidence score from 0-100.
+        Anda ialah pakar OCR untuk resit timbang kelapa sawit FGV Trading Sdn. Bhd. Ekstrak data dengan ketepatan 100% mengikut peraturan berikut:
+
+        LOGIK EKSTRAKSI:
+        - tarikh: Cari label "Tarikh Urusniaga". Gunakan format YYYY-MM-DD.
+        - masa_masuk: Cari baris "Gross". Ambil masa (HH:mm) di bawah lajur "Masa".
+        - no_resit: Ambil nilai di sebelah "No. Akaun Terima" (cth: A00008947).
+        - no_lori: Ambil nilai di sebelah "No. Lori" (cth: CCR1449). Buang sebarang jarak.
+        - no_nota_hantaran: Cari label "Nota Hantaran" di kawasan atas "No. Lori". Ambil semua nombor selepas label tersebut.
+        - kpg: Cari baris yang sama dengan "Nota Hantaran". Ambil nombor dengan 2 titik perpuluhan selepas corak "21.00/" atau "21.25/" (cth: jika "21.25/19.50", ambil "19.50"). Jika tiada corak tersebut, cari nilai KPG yang munasabah.
+        - blok: Cari baris "Penjual". Ambil nombor 1 atau 2 digit yang berada tepat sebelum perkataan "SKB" (cth: jika "12 SKB", ambil "12"; jika "1 SKB", ambil "1").
+        - tan: Cari label "Nett.". Ambil nilai nombor (tan) di sebelahnya (cth: 3.24).
+        - muda: Cari label "Muda :" atau ">25 0, Muda". Ambil nombor selepasnya (biasanya 1 atau 2 digit tandan). Jika tiada, pulangkan 0.
+        - no_seal: Cari nombor tulisan tangan 6 digit di bahagian bawah resit (cth: di bawah "M-Manual"). Jika tiada, pulangkan null.
+        - rm_mt: Cari label "Harga/Tan". Ambil semua nombor selepas label tersebut.
+        - reject: Cari label "Reject" (berada di atas "Nett."). Ambil semua nombor selepas label tersebut.
+        - sample: Cari label "Sampel". Ambil nombor selepasnya (biasanya 1, 2, atau 3).
+
+        PERATURAN TEKNIKAL:
+        1. Output WAJIB dalam format JSON sahaja.
+        2. Nilai "tan", "kpg", "muda", "rm_mt", "reject", dan "sample" mestilah jenis 'number'.
+        3. Jika tulisan kabur, semak Nett = Gross - Tare. Gunakan hasil pengiraan tersebut.
+        4. Tambah field "is_efb" (boolean): true jika resit menyebut "EFB" atau "Tandan Kosong".
+        5. Tambah field "confidence" (number): skor keyakinan 0-100.
 
         Return ONLY the JSON object.
       `;
@@ -3281,7 +3287,7 @@ export default function App() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                               <FloatingInput label="No. Seal" value={formData.no_seal} onChange={v => setFormData({...formData, no_seal: v})} />
-                              <FloatingInput label="Harga/tan" type="number" step="0.01" value={formData.rm_mt} onChange={v => setFormData({...formData, rm_mt: v})} />
+                              <FloatingInput label="Harga/Tan" type="number" step="0.01" value={formData.rm_mt} onChange={v => setFormData({...formData, rm_mt: v})} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                               <FloatingInput label="KPG" value={formData.kpg} onChange={v => setFormData({...formData, kpg: v})} />
