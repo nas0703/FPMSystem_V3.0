@@ -267,7 +267,7 @@ const ReportSummarySection = ({ type, data, period, isDarkMode, mode = 'all' }: 
         </div>
       )}
 
-      {(type === 'muda' || type === 'muda_high') && (
+      {type === 'muda' && (
         <div className="space-y-1.5 h-full flex flex-col">
           {/* Hero Summary Card - Total Muda */}
           {showHero && (
@@ -479,7 +479,7 @@ export default function App() {
     setDirection(nextIndex > currentIndex ? 1 : -1);
     setActiveTab(newTab);
   };
-  const [reportType, setReportType] = useState<'hasil' | 'muda' | 'kpa_kpg' | 'harga' | 'efb' | 'efc_format' | 'muda_high'>('hasil');
+  const [reportType, setReportType] = useState<'hasil' | 'muda' | 'kpa_kpg' | 'harga' | 'efb' | 'efc_format'>('hasil');
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right'>('left');
   const [showRanking, setShowRanking] = useState(false);
   const [rankingPeriod, setRankingPeriod] = useState<'month' | 'year'>('month');
@@ -1579,10 +1579,15 @@ export default function App() {
       worksheet.getColumn(11).width = 10;
       worksheet.getColumn(12).width = 8;
 
-    } else if (reportType === 'muda_high') {
+    } else if (reportType === 'muda') {
+      // 1. Muda Tinggi Sheet (>=5)
       const highMudaData = ffbData.filter(d => (parseInt(String(d.muda)) || 0) >= 5);
-      const worksheet = workbook.addWorksheet('Muda Tinggi (>=5)');
-      createStandardSheet(worksheet, highMudaData, 'LAPORAN SENARAI LORI/RESIT (BTS MUDA >= 5)');
+      const highMudaSheet = workbook.addWorksheet('Muda Tinggi (>=5)');
+      createStandardSheet(highMudaSheet, highMudaData, 'LAPORAN SENARAI LORI/RESIT (BTS MUDA >= 5)');
+
+      // 2. Standard Muda Sheet
+      const worksheet = workbook.addWorksheet('Rekod Hantaran');
+      createStandardSheet(worksheet, ffbData, `LAPORAN ANALITIK: ${reportType.toUpperCase()}`, true);
     } else if (reportType === 'efb') {
       const worksheet = workbook.addWorksheet('Rekod EFB');
       createStandardSheet(worksheet, efbData, 'LAPORAN PENGHANTARAN EFB (TANDAN KOSONG)');
@@ -1889,6 +1894,8 @@ export default function App() {
       fileName = `FPMSB_TUNGGAL_KPG_KPA_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
     } else if (reportType === 'efc_format') {
       fileName = `FPMSB_TUNGGAL_EFC_Format_${new Date().toISOString().split('T')[0]}.xlsx`;
+    } else if (reportType === 'muda_high') {
+      fileName = `FPMSB_TUNGGAL_Muda_Tinggi_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
     }
     if (exportFilter === 'date') fileName = fileName.replace('.xlsx', `_${exportDate}.xlsx`);
     if (exportFilter === 'month') fileName = fileName.replace('.xlsx', `_${exportMonth}.xlsx`);
@@ -2619,8 +2626,7 @@ export default function App() {
                     { id: 'muda', label: 'Muda' },
                     { id: 'kpa_kpg', label: 'Kpg=Kpa' },
                     { id: 'efb', label: 'EFB' },
-                    { id: 'efc_format', label: 'Efc Format' },
-                    { id: 'muda_high', label: 'Muda > 5' }
+                    { id: 'efc_format', label: 'Efc Format' }
                   ] as const).map(r => (
                     <button 
                       key={r.id}
@@ -3423,7 +3429,7 @@ export default function App() {
                         <div className="flex items-center justify-center gap-2">
                           <h3 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-1.5">
                             <BarChart3 size={10} className="text-emerald-500" />
-                            Trend Bulanan ({new Date().getFullYear()}) - {reportType === 'hasil' ? 'HASIL' : (reportType === 'muda' || reportType === 'muda_high') ? 'BTS MUDA' : reportType === 'efb' ? 'EFB' : 'KPG=KPA'}
+                            Trend Bulanan ({new Date().getFullYear()}) - {reportType === 'hasil' ? 'HASIL' : reportType === 'muda' ? 'BTS MUDA' : reportType === 'efb' ? 'EFB' : 'KPG=KPA'}
                           </h3>
                         </div>
                         <motion.button 
@@ -3492,7 +3498,7 @@ export default function App() {
                                   </div>
                                   <div className="px-1.5 py-0.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-md border border-emerald-100 dark:border-emerald-800">
                                     <p className="text-[6px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
-                                      {reportType === 'hasil' ? 'T/H' : (reportType === 'muda' || reportType === 'muda_high') ? 'Bts' : reportType === 'efb' ? 'Tan' : 'Resit'}
+                                      {reportType === 'hasil' ? 'T/H' : reportType === 'muda' ? 'Bts' : reportType === 'efb' ? 'Tan' : 'Resit'}
                                     </p>
                                   </div>
                                 </div>
@@ -3501,7 +3507,7 @@ export default function App() {
                                     {(() => {
                                       const dataKey = reportType === 'hasil' ? 
                                         (selectedBlockFilter !== 'all' ? `yield_${selectedBlockFilter}` : selectedPactFilter === '001' ? 'pkt1' : selectedPactFilter === '002' ? 'pkt2' : 'yield') : 
-                                        (reportType === 'muda' || reportType === 'muda_high') ? 
+                                        reportType === 'muda' ? 
                                         (selectedBlockFilter !== 'all' ? `muda_${selectedBlockFilter}` : selectedPactFilter === '001' ? 'pkt1Muda' : selectedPactFilter === '002' ? 'pkt2Muda' : 'muda') : 
                                         reportType === 'efb' ? 'efb' :
                                         (selectedBlockFilter !== 'all' ? `kpg_${selectedBlockFilter}` : selectedPactFilter === '001' ? 'pkt1Kpg' : selectedPactFilter === '002' ? 'pkt2Kpg' : 'kpg');
@@ -4631,7 +4637,7 @@ export default function App() {
                         expandedTrendChart === 'overall' ? 'yield' :
                         expandedTrendChart === 'pkt1' ? 'pkt1' :
                         expandedTrendChart === 'pkt2' ? 'pkt2' : 'felda'
-                      ) : (reportType === 'muda' || reportType === 'muda_high') ? (
+                      ) : reportType === 'muda' ? (
                         expandedTrendChart === 'overall' ? 'muda' :
                         expandedTrendChart === 'pkt1' ? 'pkt1Muda' :
                         expandedTrendChart === 'pkt2' ? 'pkt2Muda' : 'feldaMuda'
@@ -4647,19 +4653,19 @@ export default function App() {
                         expandedTrendChart === 'overall' ? '#10b981' :
                         expandedTrendChart === 'pkt1' ? '#3b82f6' :
                         expandedTrendChart === 'pkt2' ? '#f59e0b' : '#64748b'
-                      ) : (reportType === 'muda' || reportType === 'muda_high') ? '#f43f5e' : '#0ea5e9';
+                      ) : reportType === 'muda' ? '#f43f5e' : '#0ea5e9';
                       const maxColor = reportType === 'hasil' ? (
                         expandedTrendChart === 'overall' ? '#059669' :
                         expandedTrendChart === 'pkt1' ? '#2563eb' :
                         expandedTrendChart === 'pkt2' ? '#d97706' : '#475569'
-                      ) : (reportType === 'muda' || reportType === 'muda_high') ? '#e11d48' : '#0284c7';
+                      ) : reportType === 'muda' ? '#e11d48' : '#0284c7';
 
                       return (
                         <BarChart data={analytics.monthlyTrend} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? CHART_COLORS.gridDark : CHART_COLORS.grid} />
                           <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: CHART_COLORS.gray }} />
                           <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: CHART_COLORS.gray }} />
-                          {(reportType !== 'muda' && reportType !== 'muda_high') && (
+                          {reportType !== 'muda' && (
                             <Tooltip 
                               cursor={{ fill: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)' }}
                               contentStyle={{ 
@@ -4670,8 +4676,8 @@ export default function App() {
                               }}
                               labelStyle={{ fontSize: '12px', fontWeight: 800, color: isDarkMode ? '#fff' : '#1e293b', marginBottom: '4px' }}
                               formatter={(value: any) => {
-                                const unit = reportType === 'hasil' ? 'T/H' : (reportType === 'muda' || reportType === 'muda_high') ? 'Bts' : 'Resit';
-                                const label = reportType === 'hasil' ? 'Hasil' : (reportType === 'muda' || reportType === 'muda_high') ? 'Muda' : 'KPG Match';
+                                const unit = reportType === 'hasil' ? 'T/H' : reportType === 'muda' ? 'Bts' : 'Resit';
+                                const label = reportType === 'hasil' ? 'Hasil' : reportType === 'muda' ? 'Muda' : 'KPG Match';
                                 const val = reportType === 'hasil' ? parseFloat(value).toFixed(2) : value;
                                 return [`${val} ${unit}`, label];
                               }}
@@ -4767,12 +4773,12 @@ export default function App() {
 
                       const chartData = [...periodData.blokStats]
                         .filter(d => {
-                          const val = chartMetric === 'yield' ? d.yieldHek : (chartMetric === 'muda' || reportType === 'muda_high') ? d.muda : d.kpg_match_count;
+                          const val = chartMetric === 'yield' ? d.yieldHek : chartMetric === 'muda' ? d.muda : d.kpg_match_count;
                           return !isNaN(val) && !isNaN(parseInt(d.blok));
                         })
                         .sort((a, b) => parseInt(a.blok) - parseInt(b.blok));
 
-                      const values = chartData.map(d => chartMetric === 'yield' ? d.yieldHek : (chartMetric === 'muda' || reportType === 'muda_high') ? d.muda : d.kpg_match_count);
+                      const values = chartData.map(d => chartMetric === 'yield' ? d.yieldHek : chartMetric === 'muda' ? d.muda : d.kpg_match_count);
                       const maxValue = Math.max(...values);
                       const minValue = Math.min(...values.filter(v => v > 0));
 
