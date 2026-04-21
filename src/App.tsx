@@ -2103,7 +2103,11 @@ export default function App() {
       let pkt1_price1pct_count = 0, pkt2_price1pct_count = 0, felda_price1pct_count = 0;
 
       // Overall totals for the period (excluding EFB for main yield metrics)
-      const ffbData = data.filter(item => item.peringkat !== 'EFB');
+      const ffbData = data.filter(item => {
+        const p = String(item.peringkat || '').toUpperCase();
+        const isEfb = p === 'EFB' || p.includes('EFB') || p.includes('TANDAN KOSONG');
+        return !isEfb;
+      });
       const totalTan = ffbData.reduce((acc, curr) => acc + (curr.tan || 0), 0);
       const totalMuda = ffbData.reduce((acc, curr) => acc + (curr.muda || 0), 0);
       let totalResit = ffbData.length;
@@ -2135,7 +2139,11 @@ export default function App() {
       });
 
       data.forEach(row => {
-        if (row.peringkat === 'EFB') {
+        const p = String(row.peringkat || '').toUpperCase();
+        const isEfb = p === 'EFB' || p.includes('EFB') || p.includes('TANDAN KOSONG');
+        const isLowPrice = row.rm_mt && row.rm_mt < 100;
+
+        if (isEfb) {
           efb_tan += row.tan;
           efb_resit += 1;
           const rowBlok = String(row.blok || '').trim();
@@ -2159,6 +2167,8 @@ export default function App() {
           kpgMatchTan += row.tan;
         }
 
+        const shouldCountPrice = !isEfb && !isLowPrice;
+
         if (b) {
           b.tan += row.tan;
           b.muda += row.muda;
@@ -2173,37 +2183,37 @@ export default function App() {
           
           if (b.pkt === "001") { 
             pkt1_tan += row.tan; pkt1_muda += row.muda; pkt1_resit += 1; 
-            if (row.rm_mt) { pkt1_total_price += row.rm_mt; pkt1_price_count += 1; } 
-            if (row.rm_mt && kpgVal > 0) { pkt1_total_price1pct += (row.rm_mt / kpgVal); pkt1_price1pct_count += 1; }
+            if (row.rm_mt && shouldCountPrice) { pkt1_total_price += row.rm_mt; pkt1_price_count += 1; } 
+            if (row.rm_mt && kpgVal > 0 && shouldCountPrice) { pkt1_total_price1pct += (row.rm_mt / kpgVal); pkt1_price1pct_count += 1; }
           } 
           else if (b.pkt === "002") { 
             pkt2_tan += row.tan; pkt2_muda += row.muda; pkt2_resit += 1; 
-            if (row.rm_mt) { pkt2_total_price += row.rm_mt; pkt2_price_count += 1; } 
-            if (row.rm_mt && kpgVal > 0) { pkt2_total_price1pct += (row.rm_mt / kpgVal); pkt2_price1pct_count += 1; }
+            if (row.rm_mt && shouldCountPrice) { pkt2_total_price += row.rm_mt; pkt2_price_count += 1; } 
+            if (row.rm_mt && kpgVal > 0 && shouldCountPrice) { pkt2_total_price1pct += (row.rm_mt / kpgVal); pkt2_price1pct_count += 1; }
           }
           else if (b.pkt === "003") { 
             felda_tan += row.tan; felda_muda += row.muda; felda_resit += 1; 
-            if (row.rm_mt) { felda_total_price += row.rm_mt; felda_price_count += 1; } 
-            if (row.rm_mt && kpgVal > 0) { felda_total_price1pct += (row.rm_mt / kpgVal); felda_price1pct_count += 1; }
+            if (row.rm_mt && shouldCountPrice) { felda_total_price += row.rm_mt; felda_price_count += 1; } 
+            if (row.rm_mt && kpgVal > 0 && shouldCountPrice) { felda_total_price1pct += (row.rm_mt / kpgVal); felda_price1pct_count += 1; }
           }
         } else {
           // Fallback to peringkat field if block not found
           const p = String(row.peringkat || '').toUpperCase();
           if (p.includes('PKT 1') || p.includes('001')) {
             pkt1_tan += row.tan; pkt1_muda += row.muda; pkt1_resit += 1;
-            if (row.rm_mt) { pkt1_total_price += row.rm_mt; pkt1_price_count += 1; }
-            if (row.rm_mt && kpgVal > 0) { pkt1_total_price1pct += (row.rm_mt / kpgVal); pkt1_price1pct_count += 1; }
-            if (kpgVal >= 21) pkt1_kpg_match += 1;
+            if (row.rm_mt && shouldCountPrice) { pkt1_total_price += row.rm_mt; pkt1_price_count += 1; }
+            if (row.rm_mt && kpgVal > 0 && shouldCountPrice) { pkt1_total_price1pct += (row.rm_mt / kpgVal); pkt1_price1pct_count += 1; }
+            if (kpgVal >= threshold) pkt1_kpg_match += 1;
           } else if (p.includes('PKT 2') || p.includes('002')) {
             pkt2_tan += row.tan; pkt2_muda += row.muda; pkt2_resit += 1;
-            if (row.rm_mt) { pkt2_total_price += row.rm_mt; pkt2_price_count += 1; }
-            if (row.rm_mt && kpgVal > 0) { pkt2_total_price1pct += (row.rm_mt / kpgVal); pkt2_price1pct_count += 1; }
-            if (kpgVal >= 21) pkt2_kpg_match += 1;
+            if (row.rm_mt && shouldCountPrice) { pkt2_total_price += row.rm_mt; pkt2_price_count += 1; }
+            if (row.rm_mt && kpgVal > 0 && shouldCountPrice) { pkt2_total_price1pct += (row.rm_mt / kpgVal); pkt2_price1pct_count += 1; }
+            if (kpgVal >= threshold) pkt2_kpg_match += 1;
           } else if (p.includes('PKT 3') || p.includes('003') || p.includes('FELDA')) {
             felda_tan += row.tan; felda_muda += row.muda; felda_resit += 1;
-            if (row.rm_mt) { felda_total_price += row.rm_mt; felda_price_count += 1; }
-            if (row.rm_mt && kpgVal > 0) { felda_total_price1pct += (row.rm_mt / kpgVal); felda_price1pct_count += 1; }
-            if (kpgVal >= 21) felda_kpg_match += 1;
+            if (row.rm_mt && shouldCountPrice) { felda_total_price += row.rm_mt; felda_price_count += 1; }
+            if (row.rm_mt && kpgVal > 0 && shouldCountPrice) { felda_total_price1pct += (row.rm_mt / kpgVal); felda_price1pct_count += 1; }
+            if (kpgVal >= threshold) felda_kpg_match += 1;
           }
         }
       });
@@ -2291,6 +2301,12 @@ export default function App() {
 
     // Calculate daily price stats for 'harga' report
     const dailyPriceStats = (rawData || [])
+      .filter(item => {
+        const p = String(item.peringkat || '').toUpperCase();
+        const isEfb = p === 'EFB' || p.includes('EFB') || p.includes('TANDAN KOSONG');
+        const isLowPrice = item.rm_mt && item.rm_mt < 100; // EFB prices are very low (~RM 6-10)
+        return !isEfb && !isLowPrice;
+      })
       .reduce((acc: any[], curr) => {
         const date = curr.tarikh;
         if (!date) return acc;
@@ -2419,10 +2435,16 @@ export default function App() {
       });
 
       // Price aggregation for monthly trend
-      const priceData = monthData.filter(item => item.rm_mt && item.rm_mt > 0);
+      const ffbMonthPriceData = monthData.filter(item => {
+        const p = String(item.peringkat || '').toUpperCase();
+        const isEfb = p === 'EFB' || p.includes('EFB') || p.includes('TANDAN KOSONG');
+        const isLowPrice = item.rm_mt && item.rm_mt < 100;
+        return !isEfb && !isLowPrice;
+      });
+      const priceData = ffbMonthPriceData.filter(item => item.rm_mt && item.rm_mt > 0);
       const avgPrice = priceData.length > 0 ? priceData.reduce((acc, curr) => acc + curr.rm_mt, 0) / priceData.length : 0;
       
-      const price1PctData = monthData.filter(item => item.rm_mt && parseFloat(item.kpg || '0') > 0);
+      const price1PctData = ffbMonthPriceData.filter(item => item.rm_mt && parseFloat(item.kpg || '0') > 0);
       const avgPrice1Pct = price1PctData.length > 0 
         ? price1PctData.reduce((acc, curr) => acc + (curr.rm_mt / parseFloat(curr.kpg || '0')), 0) / price1PctData.length 
         : 0;
