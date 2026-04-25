@@ -550,6 +550,31 @@ export default function App() {
     return false;
   });
 
+  // Filter history to latest 3 months only as requested
+  const historyRecords = useMemo(() => {
+    if (!rawData || rawData.length === 0) return [];
+    
+    // Get Malaysia time cutoff (3 months ago from today)
+    const now = new Date(new Date().getTime() + (8 * 60 * 60 * 1000));
+    const cutoff = new Date(now);
+    cutoff.setMonth(cutoff.getMonth() - 3);
+    cutoff.setHours(0, 0, 0, 0);
+
+    return rawData
+      .filter(item => {
+        if (!item.tarikh) return false;
+        const itemDate = new Date(item.tarikh);
+        return itemDate >= cutoff;
+      })
+      .sort((a, b) => {
+        // Sort by tarikh descending, then by created_at descending
+        const dateA = a.tarikh || '';
+        const dateB = b.tarikh || '';
+        if (dateA !== dateB) return dateB.localeCompare(dateA);
+        return (b.created_at || '').localeCompare(a.created_at || '');
+      });
+  }, [rawData]);
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -1064,7 +1089,8 @@ export default function App() {
   const exportToExcel = async () => {
     try {
       setIsExporting(true);
-      let filteredData = rawData;
+      // Limit 'Semua' export to the last 3 months only as requested for sejarah
+      let filteredData = exportFilter === 'all' ? historyRecords : rawData;
 
     if (exportFilter === 'date') {
       filteredData = rawData.filter(item => {
@@ -4462,6 +4488,7 @@ export default function App() {
                 <div className="animate-in slide-in-from-right-8 duration-300">
                   <div className="flex flex-col items-center justify-center mb-3">
                     <h2 className="text-xs font-display font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2"><History size={14}/> Sejarah Harian</h2>
+                    <p className="text-[9px] font-bold text-slate-400/60 dark:text-slate-500/60 uppercase tracking-tighter mt-0.5">Memaparkan data 3 bulan terakhir sahaja</p>
                   </div>
                   <div className="flex justify-center gap-2 mb-4">
                     <motion.button 
@@ -4474,8 +4501,8 @@ export default function App() {
                     </motion.button>
                   </div>
                   <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-                    {(rawData?.length || 0) === 0 ? (
-                      <p className="text-center p-6 text-xs font-bold text-slate-400">Tiada rekod hantaran.</p>
+                    {(historyRecords?.length || 0) === 0 ? (
+                      <p className="text-center p-6 text-xs font-bold text-slate-400">Tiada rekod hantaran dalam tempoh 3 bulan terakhir.</p>
                     ) : (
                       <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
@@ -4493,7 +4520,7 @@ export default function App() {
                             </tr>
                           </thead>
                           <tbody className="text-xs font-medium text-slate-700 dark:text-slate-300">
-                            {rawData.map((row, i) => (
+                            {historyRecords.map((row, i) => (
                               <tr key={i} className="border-b border-slate-50 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800">
                                 <td className="p-3 whitespace-nowrap">{new Date(row.tarikh).toLocaleDateString('ms-MY', { day:'2-digit', month:'short' })}</td>
                                 <td className="p-3">
