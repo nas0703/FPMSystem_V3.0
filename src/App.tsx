@@ -554,17 +554,19 @@ export default function App() {
   const historyRecords = useMemo(() => {
     if (!rawData || rawData.length === 0) return [];
     
-    // Get Malaysia time cutoff (3 months ago from today)
-    const now = new Date(new Date().getTime() + (8 * 60 * 60 * 1000));
-    const cutoff = new Date(now);
-    cutoff.setMonth(cutoff.getMonth() - 3);
-    cutoff.setHours(0, 0, 0, 0);
+    // Get cutoff date 3 months ago safely using local string format
+    const cutoffDate = new Date();
+    cutoffDate.setMonth(cutoffDate.getMonth() - 3);
+    const y = cutoffDate.getFullYear();
+    const m = String(cutoffDate.getMonth() + 1).padStart(2, '0');
+    const d = String(cutoffDate.getDate()).padStart(2, '0');
+    const cutoffStrLocal = `${y}-${m}-${d}`;
 
     return rawData
       .filter(item => {
         if (!item.tarikh) return false;
-        const itemDate = new Date(item.tarikh);
-        return itemDate >= cutoff;
+        // Direct string comparison is safest for YYYY-MM-DD
+        return item.tarikh >= cutoffStrLocal;
       })
       .sort((a, b) => {
         // Sort by tarikh descending, then by created_at descending
@@ -4522,7 +4524,14 @@ export default function App() {
                           <tbody className="text-xs font-medium text-slate-700 dark:text-slate-300">
                             {historyRecords.map((row, i) => (
                               <tr key={i} className="border-b border-slate-50 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800">
-                                <td className="p-3 whitespace-nowrap">{new Date(row.tarikh).toLocaleDateString('ms-MY', { day:'2-digit', month:'short' })}</td>
+                                <td className="p-3 whitespace-nowrap">
+                                  {(() => {
+                                    if (!row.tarikh || !row.tarikh.includes('-')) return row.tarikh;
+                                    const parts = row.tarikh.split('-');
+                                    const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
+                                    return `${parts[2]} ${monthNames[parseInt(parts[1], 10) - 1]}`;
+                                  })()}
+                                </td>
                                 <td className="p-3">
                                   <div className="font-bold">{row.no_resit}</div>
                                   <div className="text-[9px] text-slate-400 dark:text-slate-500 flex flex-col">
