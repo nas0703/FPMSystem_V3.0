@@ -554,20 +554,7 @@ export default function App() {
   const historyRecords = useMemo(() => {
     if (!rawData || rawData.length === 0) return [];
     
-    // Get cutoff date 3 months ago safely using local string format
-    const cutoffDate = new Date();
-    cutoffDate.setMonth(cutoffDate.getMonth() - 3);
-    const y = cutoffDate.getFullYear();
-    const m = String(cutoffDate.getMonth() + 1).padStart(2, '0');
-    const d = String(cutoffDate.getDate()).padStart(2, '0');
-    const cutoffStrLocal = `${y}-${m}-${d}`;
-
     return rawData
-      .filter(item => {
-        if (!item.tarikh) return false;
-        // Direct string comparison is safest for YYYY-MM-DD
-        return item.tarikh >= cutoffStrLocal;
-      })
       .sort((a, b) => {
         // Sort by tarikh descending, then by created_at descending
         const dateA = a.tarikh || '';
@@ -4504,7 +4491,7 @@ export default function App() {
                   </div>
                   <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
                     {(historyRecords?.length || 0) === 0 ? (
-                      <p className="text-center p-6 text-xs font-bold text-slate-400">Tiada rekod hantaran dalam tempoh 3 bulan terakhir.</p>
+                      <p className="text-center p-6 text-xs font-bold text-slate-400">Tiada rekod hantaran dijumpai.</p>
                     ) : (
                       <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">

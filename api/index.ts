@@ -164,7 +164,7 @@ router.get("/hantaran", async (req, res) => {
         .from('hantaran_hasil')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(5000);
+        .limit(10000);
 
       if (error) {
         console.error("Supabase Fetch Error:", error);
