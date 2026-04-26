@@ -942,7 +942,7 @@ export default function App() {
       }
     } catch (err: any) { 
       console.error("Submission error:", err);
-      showToast('error', 'Gagal menghubungi pelayan. Sila periksa sambungan internet.'); 
+      showToast('error', err.message || 'Gagal menghubungi pelayan. Sila periksa sambungan internet.'); 
     } 
     finally { setIsProcessing(false); }
   };
